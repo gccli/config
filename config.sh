@@ -165,6 +165,8 @@ function config_bash()
 
     echo "# $config_begin @time:$(date +%D) @version:$VERSION" > $bashlocal
     echo ". ~/.functions" >> $bashlocal
+    echo ". ~/.vboxmanage" >> $bashlocal
+
     [ $DISTRIB_ID == "CentOS" ] && echo ". ~/.bash_aliases" >> $bashlocal
 
     if [ $opt_cfg_rsa -ne 0 ]; then
@@ -174,8 +176,6 @@ function config_bash()
     echo >> $bashlocal
     echo "# env variables" >> $bashlocal
     # config python startup file
-    echo ". ~/.devrc" >> $bashlocal
-    echo ". ~/.vboxmanage" >> $bashlocal
     echo 'export PYTHONSTARTUP=~/.pythonstartup' >> $bashlocal
     cat $bashlocal
 }
@@ -213,10 +213,13 @@ function config_ssh_agent()
         return
     fi
 
-    notice "decrypting rsa key:"
-    openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
-    if [ $? -ne 0 ]; then
-        die "Decrypt RSA key error"
+    if [ ! -f ${SRC} ]; then
+        echo
+        notice "decrypting rsa key:"
+        openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
+        if [ $? -ne 0 ]; then
+            die "Decrypt RSA key error"
+        fi
     fi
 
     notice "config ssh agent"
