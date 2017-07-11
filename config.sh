@@ -269,19 +269,6 @@ function config_ssh()
     config_ssh_agent
 }
 
-function config_smb()
-{
-    [ $UID -ne 0 ] && echo "use root config smbd" && return
-    if [ ! -f /etc/samba/smb.conf ]; then
-        return
-    fi
-
-    if ! diff smb.conf /etc/samba/smb.conf; then
-        copyfile smb.conf /etc/samba/smb.conf
-        service smbd restart
-    fi
-}
-
 ########## END ##########
 
 ################################################################################
@@ -321,4 +308,3 @@ config_bash
 config_git
 config_emacs
 config_ssh
-config_smb
