@@ -1,0 +1,53 @@
+export SSH_ENV=$HOME/.ssh/environment
+
+# functions for ssh agent
+function sigint()
+{
+    echo "catch ctrl-c, exit bash!"
+    ssh-agent -k
+    sleep 1
+    # default trap
+    trap INT
+    exit 0
+}
+
+# start ssh agent
+function start_agent() {
+    trap sigint INT
+    echo "Initialising new ssh agent"
+    ssh-agent > $SSH_ENV
+    sed -i '/^echo/d' $SSH_ENV
+    chmod 600 $SSH_ENV
+    source $SSH_ENV
+    ssh-add
+    status=$?
+    trap INT
+    if [ $status -ne 0 ]; then
+	echo "failed to add ssh keys, kill agent!"
+	ssh-agent -k
+	sleep 1
+	exit 1
+    fi
+}
+
+function check_keys() {
+    output=$(ssh-add -l 2>&1)
+    status=$?
+    if [ $status -ne 0 ]; then
+	echo "check ssh keys error($status) - $output, kill agent!"
+	ssh-agent -k
+	sleep 1
+	exit 1
+    fi
+}
+
+if [ -f $SSH_ENV ]; then
+    source $SSH_ENV
+    ps -ef | grep $SSH_AGENT_PID | grep ssh-agent$ > /dev/null || {
+        start_agent
+	check_keys
+    }
+else
+    start_agent
+    check_keys
+fi

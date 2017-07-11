@@ -1,0 +1,28 @@
+#! /bin/bash
+
+function vmstart() {
+    if [ -z "$1" ]; then
+        echo "$0 name"
+        exit 1
+    fi
+
+    VBoxManage startvm $1 --type headless
+}
+
+function vmstop() {
+    if [ -z "$1" ]; then
+        echo "$0 name"
+        exit 1
+    fi
+
+    VBoxManage controlvm $1 poweroff
+}
+
+function vmreboot() {
+    if [ -z "$1" ]; then
+        echo "$0 name"
+        exit 1
+    fi
+
+    VBoxManage controlvm $1 reset
+}

@@ -1,0 +1,176 @@
+#! /bin/bash
+
+# version: 1.1.5
+# 1.1.4 add bash completion for my own functions
+# 1.1.5 add utils function
+# 1.1.6 add secure_ssh function
+
+# Global settings for bash
+
+ulimit -c unlimited
+export PS1='[\u@\h \W]\$ '
+
+function find_parent {
+    if [ -z "$1" ]; then
+	echo "usage: $0 progname"
+    fi
+    local prog=$1
+    local pids=$(pidof $prog)
+    local n=0
+
+    for p in $pids
+    do
+	[ ! -r /proc/$p/stat ] && continue
+	n=$(ps -oppid -p$p | sed '1d')
+	for pid in $pids
+	do
+	    if [ $n -eq $pid ]; then
+		echo $n
+		return 0
+	    fi
+	done
+    done
+    echo 0
+    return 1
+}
+
+function lsofp() {
+    if [ -z "$1" ]; then
+	echo "usage: $0 progname"
+    fi
+    local prog=$1
+    local pid=$(pidof $prog)
+    if [ $(echo $pid | wc -w) -eq 1 ]; then
+	lsof -p $pid
+    fi
+}
+
+function psp() {
+    if [ -z "$1" ]; then
+	echo "usage: $0 progname"
+    fi
+    local prog=$1
+    local pids=$(pidof $prog)
+    local npid=$(echo $pids | wc -w)
+    local parent=$(find_parent $prog)
+    echo "Number of processes $npid"
+    if [ -n "$pids" ]; then
+        ps -ouser,pid,nlwp,ppid,start,etimes,pcpu,pmem,rss,vsz,stat,tname,ucmd -p \
+	   $pids | sed "s#^$parent.*#\x1b[32m\x1b[1m&\x1b[0m#; s#\s*PID.*#\x1b[7m&\x1b[0m#"
+    fi
+}
+
+function mywhois {
+  host=$1
+  whois -H $host | sed 's#.*ID:#\x1b[31m&\x1b[0m#'
+}
+
+# function for submit code changes to server
+function gitsubmit() {
+    local message="ok"
+    if [ -n "$1" ]; then
+	message=$1
+    else
+	echo "usage: gitsubmit <message>"
+	return
+    fi
+    git commit -a -m "$message"
+    if [ $? -ne 0 ]; then
+	echo "error occur when commit changes"
+	return
+    fi
+    echo "commit changes ok"
+    git push
+    echo "done"
+}
+
+function gitupdate() {
+    local files=$@
+    echo "upload files - $files ..."
+    git commit -m "update files" $files
+    if [ $? -ne 0 ]; then
+	echo "error occur when commit changes"
+	return
+    fi
+    echo "commit changes ok"
+    git push
+    echo "done"
+}
+
+function addrsa() {
+    local rsa=$HOME/core/.ssh/id_rsa
+    if [ ! -f $rsa ]; then
+	echo "RSA $rsa not exists"
+	return
+    fi
+    chmod 400 $rsa
+    ssh-add $rsa
+    ssh-add -l
+}
+
+function extract-word() {
+    egrep -o '[a-z]{8,20}' $1 | sort | uniq -c | sort -nr
+}
+
+function count-word() {
+    egrep -o $1 $2
+}
+
+function count-word-i() {
+    egrep -io $1 $2
+}
+
+function secure_ssh() {
+    local yes_or_no=$1
+
+    [ $UID -ne 0 ] &&  echo "need root" && return
+    if [ -z "$yes_or_no" ]; then
+        yes_or_no=no
+    fi
+
+    cp /etc/ssh/sshd_config /tmp
+    sed -i "s/^PermitRootLogin.*/PermitRootLogin $yes_or_no/" /etc/ssh/sshd_config
+    sed -i "s/^[#]*PasswordAuthentication.*/PasswordAuthentication $yes_or_no/" /etc/ssh/sshd_config
+    egrep '^PermitRootLogin|^PasswordAuthentication' /etc/ssh/sshd_config
+
+    echo "Please restart your ssh server"
+}
+
+function get_current_client_ip() {
+    local ip=
+    local nn=
+    local pp=$(ps -opid,ppid,ucmd -p$$ --no-headers | awk '{ print $2 }')
+
+    while [ $pp -ne 1 ]
+    do
+        nn=$(ps -opid,ppid,ucmd -p$pp --no-headers | awk '{ print $3 }')
+        if [ "$nn"x == "sshdx" ]; then
+            local ff=$(mktemp)
+            if [ $UID -ne 0 ]; then
+                sudo lsof -nP -i4 -a -p$pp >$ff 2>/dev/null
+            else
+                lsof -nP -i4 -a -p$pp >$ff 2>/dev/null
+            fi
+            ip=$(egrep '\b:22\b' $ff|egrep -o '([0-9]+\.){3}[0-9]+'|sed -n '2p')
+            break;
+        fi
+
+        pp=$(ps -opid,ppid,ucmd -p$pp --no-headers | awk '{ print $2 }')
+    done
+
+    echo $ip
+}
+
+function get_display() {
+    local IP=$(get_current_client_ip)
+    [ -n "$IP" ] &&  export DISPLAY="$IP:0.0"
+    echo $DISPLAY
+}
+
+# bash completioin for my own functions
+_psp()
+{
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    COMPREPLY=( $(compgen -W "mc_managerd mc_workerd psf_service_centerd psf_server_managerd" -- $cur) )
+}
+complete -F _psp psp

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+show(){
+    echo -ne "\x1b[32m$1\x1b[0m"
+}
+
+show "+------------------------------------------+\n"
+show "| Disk    "
+
+tmp=$(mktemp)
+df -h | egrep '(/dev/sd)' | awk '{ print "("$1,$3"/"$2,$5")" }' > $tmp
+while read line
+do
+    echo -n "$line  "
+done < $tmp
+echo
+show "| Memory  "
+free -h | egrep 'Mem:' | awk '{ print "("$3"/"$2")" }'
+
+show "| IpAddr  "
+ip addr | grep '\binet\b.*global' | awk '{ print "("$8,$2")" }' > $tmp
+while read line
+do
+    echo -n "$line  "
+done < $tmp
+echo
+
+[ -r ~/.display ] && show "| Display " &&  awk -F'=' '{ print "("$2")" }' ~/.display
+echo
