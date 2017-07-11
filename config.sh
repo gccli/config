@@ -264,7 +264,7 @@ function config_ssh_server()
 function config_ssh()
 {
     mkdir -p ~/.ssh
-    /bin/cp -f ${PWD}/ssh/config ~/.ssh/
+    /bin/cp -p -f ${PWD}/ssh/config ~/.ssh/
     config_ssh_server
     config_ssh_agent
 }
