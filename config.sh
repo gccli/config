@@ -203,7 +203,7 @@ function config_git()
 
 function config_ssh_agent()
 {
-    local SRC=.ssh/id_rsa
+    local SRC=$PWD/ssh/id_rsa
     local DST=~/.ssh/id_rsa
     local AUTHORIZED=~/.ssh/authorized_keys
 
@@ -212,8 +212,15 @@ function config_ssh_agent()
         rm -f $DST ~/.ssh/agentrc ~/.ssh/environment
         return
     fi
+
+    notice "decrypting rsa key:"
+    openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
+    if [ $? -ne 0 ]; then
+        die "Decrypt RSA key error"
+    fi
+
     notice "config ssh agent"
-    cp .ssh/agentrc ~/.ssh/agentrc
+    cp $PWD/ssh/agentrc ~/.ssh/agentrc
 
     diff $SRC $DST >/dev/null 2>&1
     if [ $? -eq 0 ]; then
