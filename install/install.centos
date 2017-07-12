@@ -2,6 +2,8 @@
 
 . install.common
 
+
+
 function install_packages() {
     echo $@
 
@@ -39,7 +41,11 @@ do
     fi
 done
 
-
 function install_dev() {
     install_packages libssl-dev libpcre3-dev libz-dev
 }
+
+
+if [ ${RPM_LIST}x != "x" ]; then
+    install_packages $RPM_LIST
+fi
