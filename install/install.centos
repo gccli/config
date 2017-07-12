@@ -46,6 +46,6 @@ function install_dev() {
 }
 
 
-if [ ${RPM_LIST}x != "x" ]; then
+if [ "${RPM_LIST}x" != "x" ]; then
     install_packages $RPM_LIST
 fi
