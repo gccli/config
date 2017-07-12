@@ -1,0 +1,16 @@
+#! /bin/bash
+
+DISTRIB=
+if [ -f /etc/redhat-release ]; then
+    DISTRIB=CentOS
+else
+    DISTRIB=Ubuntu
+fi
+
+BASE_PACKAGES="${BASE_PACKAGES} wget"
+BASE_PACKAGES="${BASE_PACKAGES} git"
+BASE_PACKAGES="${BASE_PACKAGES} openssl"
+BASE_PACKAGES="${BASE_PACKAGES} net-tools"
+BASE_PACKAGES="${BASE_PACKAGES} emacs"
+BASE_PACKAGES="${BASE_PACKAGES} gdb"
+BASE_PACKAGES="${BASE_PACKAGES} cscpoe"

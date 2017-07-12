@@ -1,0 +1,45 @@
+#! /bin/bash
+
+. install.common
+
+function install_packages() {
+    echo $@
+
+    for i in $(echo $@)
+    do
+        echo "<<<<<<<<    check $i"
+	ver=$(rpm -qi $i  | sed -ne 's/^Version.*:\(.*\)/\1/p')
+        if [ -z "$ver" ]; then
+            echo ">>>>>>>>    install $i"
+            yum -y install $i
+            if [ $? -ne 0 ]; then
+                echo "-------------------FAIL"
+
+            fi
+        else
+            echo "  version:$ver"
+        fi
+
+    done
+    return 0
+}
+
+echo
+echo "Check for base packages ..."
+for i in $BASE_PACKAGES
+do
+    printf " check for %-64s" "$i..."
+    rpm -q $i >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "failure"
+        RPM_LIST="$i $RPM_LIST"
+    else
+        ver=$(rpm -q --queryformat %{version}-%{release} $i)
+        echo "ok ($ver)"
+    fi
+done
+
+
+function install_dev() {
+    install_packages libssl-dev libpcre3-dev libz-dev
+}

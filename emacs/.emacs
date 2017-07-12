@@ -104,6 +104,6 @@
 (load-file "~/.emacs.d/lisp/predictive.el")
 (put 'TeX-narrow-to-group 'disabled nil)
 
-(add-to-list 'load-path "~/.emacs.d/wubi")
-(require 'wubi)
-(setq default-input-method "chinese-wubi")
+;(add-to-list 'load-path "~/.emacs.d/wubi")
+;(require 'wubi)
+;(setq default-input-method "chinese-wubi")

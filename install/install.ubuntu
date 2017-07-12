@@ -1,0 +1,124 @@
+#! /bin/bash
+
+. install.common
+
+function install_packages() {
+    echo $@
+
+    for i in $(echo $@)
+    do
+        echo "<<<<<<<<    check $i"
+        local ver=$(dpkg -s $i 2>/dev/null | sed -ne 's/^Version:\(.*\)/\1/p')
+        if [ -z "$ver" ]; then
+            echo ">>>>>>>>    install $i"
+            sudo apt-get -y install $i
+            if [ $? -ne 0 ]; then
+                read -p 'failed, exit (y/n)' y
+                if [ -n "$y" -a "$y" == "y" ]; then
+                    exit 1
+                fi
+            fi
+        else
+            echo "  version:$ver"
+        fi
+    done
+    return 0
+}
+
+
+
+
+
+components="math php python dev emacs service"
+
+function install_core() {
+    install_packages build-essential autoconf g++ gdb valgrind cscope bcpp
+    install_packages mercurial git
+    install_packages emacs24 openssl
+    install_packages zip unzip curl wget markdown
+    install_packages nmap
+    install_packages dos2unix
+}
+
+
+function install_math() {
+    # TeX LaTeX
+    install_packages texworks texlive-latex-base
+    install_packages texlive texlive-base texlive-xetex
+    install_packages texlive-doc-en
+    install_packages texlive-math-extra
+
+    # fonts
+    install_packages fonts-wqy-zenhei
+
+    # octave
+    install_packages octave
+
+    # ipython
+    install_packages ipython ipython-qtconsole python-matplotlib
+}
+
+function install_python() {
+    install_packages python-pip
+    install_packages python-numpy python-pandas
+    # Python modules for machine learning and data mining
+    install_packages python-sklearn
+}
+
+function install_php() {
+    install_packages php5-cli
+}
+
+function install_dev() {
+    install_packages libpcap0.8-dev libdumbnet-dev
+    install_packages libpcre3-dev libz-dev
+    install_packages libssl-dev
+    install_packages libjson-c-dev
+}
+
+function install_emacs()
+{
+    install_packages auctex
+}
+
+function install_service() {
+    install_packages samba openssh-server
+}
+
+# ==============================================================================
+# No Default
+function install_virtualbox() {
+    install_packages virtualbox-guest-utils
+    install_packages rng-tools
+}
+
+# ==============================================================================
+
+
+[ $UID -ne 0 ] && echo "use sudo" && exit 1
+opt_update=1
+if ! my__options=$(getopt -u -o n -- "$@"); then
+    exit 1
+fi
+set -- $my__options
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -n)
+            opt_update=0;
+            shift;;
+        (--) shift; break;;
+        (-*) echo "error - unrecognized option $1" 1>&2; exit 1;;
+        (*) break;;
+    esac
+    shift
+done
+
+[ $opt_update -ne 0 ] && apt-get update -y
+mkdir -p ~/{.emacs.d/lisp,.ssh}
+install_core
+if [ "$1" == "all" ]; then
+    for i in $(echo -n $components); do install_$i; done
+else
+    for i in $@; do install_$i; done
+fi
