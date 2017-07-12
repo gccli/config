@@ -2,8 +2,6 @@
 
 . install.common
 
-
-
 function install_packages() {
     echo $@
 
@@ -26,20 +24,18 @@ function install_packages() {
     return 0
 }
 
-echo
-echo "Check for base packages ..."
-for i in $BASE_PACKAGES
-do
-    printf " check for %-64s" "$i..."
-    rpm -q $i >/dev/null 2>&1
+function check_package() {
+    local pkg=$1
+    local ver=
+    rpm -q $pkg >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "failure"
-        RPM_LIST="$i $RPM_LIST"
     else
         ver=$(rpm -q --queryformat %{version}-%{release} $i)
         echo "ok ($ver)"
     fi
-done
+}
+
 
 function install_dev() {
     install_packages libssl-dev libpcre3-dev libz-dev
