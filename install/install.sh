@@ -6,21 +6,46 @@ else
     . install.ubuntu
 fi
 
+function do_install() {
+    local package_list=$@
+    local pkgs=
 
-PKGS=
+    echo
+    echo "Check (${package_list}) ..."
+    for i in ${package_list}
+    do
+        printf " check for %-64s" "$i..."
+        result=$(check_package $i)
+        if [ "$result" == "failure" ]; then
+            pkgs="$i $pkgs"
+        fi
+        echo $result
+    done
 
-echo
-echo "Check for base packages ..."
-for i in $BASE_PACKAGES
-do
-    printf " check for %-64s" "$i..."
-    result=$(check_package $i)
-    if [ "$result" == "failure" ]; then
-        PKGS="$i $PKGS"
+    if [ "$pkgs"x != "x" ]; then
+        install_packages $pkgs
     fi
-    echo $result
+}
+
+PACKAGES=$BASE_TOOLS
+for opt in $@
+do
+
+    case $opt in
+        dev)
+            PACKAGES="${PACKAGES} ${DEV_TOOLS}"
+            ;;
+        lib)
+            PACKAGES="${PACKAGES} ${DEV_LIBS}"
+            ;;
+        ext)
+            PACKAGES="${PACKAGES} ${EXT_TOOLS}"
+            ;;
+    esac
 done
 
-if [ "$PKGS"x != "x" ]; then
-    install_packages $PKGS
+read -p "Packages [$PACKAGES] will be installed (yes/no)? " yesno
+if [ "${yesno}!" == "yes!" ]; then
+    do_install $PACKAGES
 fi
+echo

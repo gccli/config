@@ -1,14 +1,20 @@
 #! /bin/bash
 
-BASE_PACKAGES="${BASE_PACKAGES} wget"
-BASE_PACKAGES="${BASE_PACKAGES} git"
-BASE_PACKAGES="${BASE_PACKAGES} openssl"
-BASE_PACKAGES="${BASE_PACKAGES} net-tools"
-BASE_PACKAGES="${BASE_PACKAGES} gdb"
-BASE_PACKAGES="${BASE_PACKAGES} cscope"
+BASE_TOOLS="wget curl git openssl net-tools"
+if [ -f /etc/redhat-release ]; then
+    BASE_TOOLS="${BASE_TOOLS} emacs"
+else
+    BASE_TOOLS="${BASE_TOOLS} emacs24"
+fi
+
+
+EXT_TOOLS="multitail"
+
+
+DEV_TOOLS="gdb cscope valgrind"
 
 if [ -f /etc/redhat-release ]; then
-    BASE_PACKAGES="${BASE_PACKAGES} emacs"
+    DEV_LIBS="openssl-devel pcre2-devel zlib-devel"
 else
-    BASE_PACKAGES="${BASE_PACKAGES} emacs24"
+    DEV_LIBS="libssl-dev libpcre2-dev libz-dev"
 fi
