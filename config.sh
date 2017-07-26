@@ -17,6 +17,7 @@ opt_timeout=3
 opt_link=0
 opt_verbose=0
 opt_cfg_rsa=0
+opt_rsa_without_pass=0
 
 if [ -f /etc/redhat-release ]; then
     DISTRIB_ID="CentOS"
@@ -64,7 +65,7 @@ function copyfile() {
     if [ $opt_link -ne 0 ]; then
 	ln -s $src $dst
     else
-	cp $src $dst
+	cp -p $src $dst
     fi
 }
 
@@ -205,7 +206,6 @@ function config_ssh_agent()
 {
     local SRC=$PWD/ssh/id_rsa
     local DST=~/.ssh/id_rsa
-    local AUTHORIZED=~/.ssh/authorized_keys
 
     local line=". ~/.ssh/agentrc"
     if [ $opt_cfg_rsa -eq 0 ]; then
@@ -215,10 +215,15 @@ function config_ssh_agent()
 
     if [ ! -f ${SRC} ]; then
         echo
-        notice "decrypting rsa key:"
+        notice "Decrypting RSA key:"
         openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
         if [ $? -ne 0 ]; then
             die "Decrypt RSA key error"
+        fi
+
+        if [ $opt_rsa_without_pass -eq 1 ]; then
+            notice "Remove passphrase from RSA key:"
+            ssh-keygen -p -f ${SRC}
         fi
     fi
 
@@ -228,18 +233,12 @@ function config_ssh_agent()
     diff $SRC $DST >/dev/null 2>&1
     if [ $? -eq 0 ]; then
         warn "$DST already exists"
-    else
-        cp $SRC $DST
+        return
     fi
 
-    grep "`cat $SRC.pub`" $AUTHORIZED >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        warn "public key already add to authorized_keys"
-    else
-        cat $SRC.pub >> $AUTHORIZED
-    fi
+    cp -f $SRC $DST && chmod 400 $DST
 
-    chmod 400 $DST
+    ssh-copy-id -i $SRC localhost
 }
 
 function config_ssh_server()
@@ -265,6 +264,7 @@ function config_ssh()
 {
     mkdir -p ~/.ssh
     /bin/cp -p -f ${PWD}/ssh/config ~/.ssh/
+    chmod 400 ~/.ssh/config
     config_ssh_server
     config_ssh_agent
 }
@@ -308,3 +308,4 @@ config_bash
 config_git
 config_emacs
 config_ssh
+echo 'Done'
