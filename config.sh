@@ -217,6 +217,7 @@ function config_ssh_agent()
         echo
         notice "Decrypting RSA key:"
         openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
+        chmod 600 ${SRC}
         if [ $? -ne 0 ]; then
             die "Decrypt RSA key error"
         fi
@@ -233,12 +234,14 @@ function config_ssh_agent()
     diff $SRC $DST >/dev/null 2>&1
     if [ $? -eq 0 ]; then
         warn "$DST already exists"
-        return
+    else
+        cp -f $SRC $DST && chmod 400 $DST
     fi
 
-    cp -f $SRC $DST && chmod 400 $DST
 
+    ssh-keygen -y -f ${SRC} > ${SRC}.pub
     ssh-copy-id -i $SRC localhost
+    rm -f ${SRC}.pub
 }
 
 function config_ssh_server()
@@ -273,7 +276,7 @@ function config_ssh()
 
 ################################################################################
 ##################           Parse Command Line             ####################
-if ! my__options=$(getopt -u -o vhl -l rsa,help -- "$@")
+if ! my__options=$(getopt -u -o vhl -l rsa,rsa-nopass,help -- "$@")
 then
     exit 1
 fi
@@ -290,6 +293,10 @@ do
             opt_link=1;;
         --rsa)
             opt_cfg_rsa=1;;
+        --rsa-nopass)
+            opt_cfg_rsa=1
+            opt_rsa_without_pass=1
+            ;;
         (--) shift; break;;
         (-*) echo "error - unrecognized option $1" 1>&2; exit 1;;
         (*) usage;;
