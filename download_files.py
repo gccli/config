@@ -128,7 +128,6 @@ def main():
     writer = csv.writer(csv_w)
     writer.writerow(reader.next())
 
-    diff = False
     for row in reader:
         dst = os.getenv('HOME')+row[0]
         src = os.getcwd() + '/' + row[1]
@@ -143,16 +142,12 @@ def main():
 
         print rsp.code
         if rsp.code != 304:
-            diff = True
             row[3] = rsp.headers.get('ETag', '')
             open(src, 'wb').write(rsp.body)
 
         writer.writerow(row)
         print 'cp {0} {1}'.format(src, dst)
         shutil.copyfile(src, dst)
-        #cmd = '/bin/cp -f {0} {1}'.format(src, dst)
-        #print cmd
-        #subprocess.call(cmd)
 
     csv_r.close()
     csv_w.close()
