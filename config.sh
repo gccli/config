@@ -69,56 +69,21 @@ function copyfile() {
     fi
 }
 
-
-function download() {
-    local src=$1
-    local dst=$2
-    if [ ! -f $dst ]; then
-        local i=0
-        while [ $i -lt 3 ]; do
-            wget --no-check-certificate --timeout $opt_timeout $src -O $dst
-            [ $? -ne 0 ] && rm -f $dst && i=$(($i+1)) && continue
-            break
-        done
-    fi
-}
-
 function config_emacs() {
     mkdir -p ~/.emacs.d/lisp
     mkdir -p ~/.emacs.d/go
 
     local version=$(emacs --version | sed -n '1p')
     local destdir=~/.emacs.d/lisp
-    local github=https://raw.githubusercontent.com
     local src=
     local dst=
 
     copyfile $PWD/emacs/.emacs ~/
 
-    src=$github/dkogan/xcscope.el/master/xcscope.el
-    dst=~/.emacs.d/lisp/xcscope.el
-    download $src $dst
-
-    src=$github/ejmr/php-mode/master/php-mode.el
-    dst=~/.emacs.d/lisp/php-mode.el
-    download $src $dst
-
-    src=http://www.emacswiki.org/emacs/download/column-marker.el
-    dst=~/.emacs.d/lisp/column-marker.el
-    download $src $dst
-
-    src=http://jblevins.org/projects/markdown-mode/markdown-mode.el
-    dst=~/.emacs.d/lisp/markdown-mode.el
-    download $src $dst
-
-    # config go mode
-    src=https://raw.githubusercontent.com/dominikh/go-mode.el/master/go-mode.el
-    dst=~/.emacs.d/go/go-mode.el
-    download $src $dst
-    src=https://raw.githubusercontent.com/dominikh/go-mode.el/master/go-mode-autoloads.el
-    dst=~/.emacs.d/go/go-mode-autoloads.el
-    download $src $dst
-
+    python download_files.py
+    if [ $? -ne 0 ]; then
+        die "download file"
+    fi
 
     if which latex 2>&1 >/dev/null ; then
         copyfile $PWD/emacs/tex.el ~/.emacs.d/lisp/
