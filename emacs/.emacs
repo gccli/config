@@ -78,6 +78,15 @@
 (add-to-list 'load-path "~/.emacs.d/go")
 (require 'go-mode-autoloads)
 
+; For yaml mode
+;(require 'yaml-mode)
+(autoload 'yaml-mode "yaml-mode" "Major mode for editing yaml file." t)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+(add-hook 'yaml-mode-hook
+          '(lambda ()
+             (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
 ; For org-mode
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))

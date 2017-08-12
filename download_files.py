@@ -135,14 +135,13 @@ def main():
         etag = row[3]
 
         req = Request(row[2], headers={'If-None-Match': etag})
-        print 'downloading {0}'.format(remote),
         rsp = req.request()
         if not rsp:
             sys.exit(1)
 
-        print rsp.code
         if rsp.code != 304:
             row[3] = rsp.headers.get('ETag', '')
+            print 'download {0} and out {1}'.format(remote, src), row[3]
             open(src, 'wb').write(rsp.body)
 
         writer.writerow(row)
