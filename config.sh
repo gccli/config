@@ -17,6 +17,7 @@ opt_timeout=3
 opt_link=0
 opt_verbose=0
 opt_cfg_rsa=0
+opt_rsa_without_pass=0
 
 if [ -f /etc/redhat-release ]; then
     DISTRIB_ID="CentOS"
@@ -64,21 +65,7 @@ function copyfile() {
     if [ $opt_link -ne 0 ]; then
 	ln -s $src $dst
     else
-	cp $src $dst
-    fi
-}
-
-
-function download() {
-    local src=$1
-    local dst=$2
-    if [ ! -f $dst ]; then
-        local i=0
-        while [ $i -lt 3 ]; do
-            wget --no-check-certificate --timeout $opt_timeout $src -O $dst
-            [ $? -ne 0 ] && rm -f $dst && i=$(($i+1)) && continue
-            break
-        done
+	cp -p $src $dst
     fi
 }
 
@@ -88,36 +75,15 @@ function config_emacs() {
 
     local version=$(emacs --version | sed -n '1p')
     local destdir=~/.emacs.d/lisp
-    local github=https://raw.githubusercontent.com
     local src=
     local dst=
 
     copyfile $PWD/emacs/.emacs ~/
 
-    src=$github/dkogan/xcscope.el/master/xcscope.el
-    dst=~/.emacs.d/lisp/xcscope.el
-    download $src $dst
-
-    src=$github/ejmr/php-mode/master/php-mode.el
-    dst=~/.emacs.d/lisp/php-mode.el
-    download $src $dst
-
-    src=http://www.emacswiki.org/emacs/download/column-marker.el
-    dst=~/.emacs.d/lisp/column-marker.el
-    download $src $dst
-
-    src=http://jblevins.org/projects/markdown-mode/markdown-mode.el
-    dst=~/.emacs.d/lisp/markdown-mode.el
-    download $src $dst
-
-    # config go mode
-    src=https://raw.githubusercontent.com/dominikh/go-mode.el/master/go-mode.el
-    dst=~/.emacs.d/go/go-mode.el
-    download $src $dst
-    src=https://raw.githubusercontent.com/dominikh/go-mode.el/master/go-mode-autoloads.el
-    dst=~/.emacs.d/go/go-mode-autoloads.el
-    download $src $dst
-
+    python download_files.py
+    if [ $? -ne 0 ]; then
+        die "download file"
+    fi
 
     if which latex 2>&1 >/dev/null ; then
         copyfile $PWD/emacs/tex.el ~/.emacs.d/lisp/
@@ -205,7 +171,6 @@ function config_ssh_agent()
 {
     local SRC=$PWD/ssh/id_rsa
     local DST=~/.ssh/id_rsa
-    local AUTHORIZED=~/.ssh/authorized_keys
 
     local line=". ~/.ssh/agentrc"
     if [ $opt_cfg_rsa -eq 0 ]; then
@@ -215,10 +180,16 @@ function config_ssh_agent()
 
     if [ ! -f ${SRC} ]; then
         echo
-        notice "decrypting rsa key:"
+        notice "Decrypting RSA key:"
         openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
+        chmod 600 ${SRC}
         if [ $? -ne 0 ]; then
             die "Decrypt RSA key error"
+        fi
+
+        if [ $opt_rsa_without_pass -eq 1 ]; then
+            notice "Remove passphrase from RSA key:"
+            ssh-keygen -p -f ${SRC}
         fi
     fi
 
@@ -229,17 +200,13 @@ function config_ssh_agent()
     if [ $? -eq 0 ]; then
         warn "$DST already exists"
     else
-        cp $SRC $DST
+        cp -f $SRC $DST && chmod 400 $DST
     fi
 
-    grep "`cat $SRC.pub`" $AUTHORIZED >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        warn "public key already add to authorized_keys"
-    else
-        cat $SRC.pub >> $AUTHORIZED
-    fi
 
-    chmod 400 $DST
+    ssh-keygen -y -f ${SRC} > ${SRC}.pub
+    ssh-copy-id -i $SRC localhost
+    rm -f ${SRC}.pub
 }
 
 function config_ssh_server()
@@ -265,6 +232,7 @@ function config_ssh()
 {
     mkdir -p ~/.ssh
     /bin/cp -p -f ${PWD}/ssh/config ~/.ssh/
+    chmod 400 ~/.ssh/config
     config_ssh_server
     config_ssh_agent
 }
@@ -273,7 +241,7 @@ function config_ssh()
 
 ################################################################################
 ##################           Parse Command Line             ####################
-if ! my__options=$(getopt -u -o vhl -l rsa,help -- "$@")
+if ! my__options=$(getopt -u -o vhl -l rsa,rsa-nopass,help -- "$@")
 then
     exit 1
 fi
@@ -290,6 +258,10 @@ do
             opt_link=1;;
         --rsa)
             opt_cfg_rsa=1;;
+        --rsa-nopass)
+            opt_cfg_rsa=1
+            opt_rsa_without_pass=1
+            ;;
         (--) shift; break;;
         (-*) echo "error - unrecognized option $1" 1>&2; exit 1;;
         (*) usage;;
@@ -308,3 +280,4 @@ config_bash
 config_git
 config_emacs
 config_ssh
+echo 'Done'
