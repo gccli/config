@@ -231,8 +231,9 @@ function config_ssh_server()
 function config_ssh()
 {
     mkdir -p ~/.ssh
-    /bin/cp -p -f ${PWD}/ssh/config ~/.ssh/
-    chmod 400 ~/.ssh/config
+    /bin/cp -f ${PWD}/ssh/config ~/.ssh/
+    chown ${USER}  ~/.ssh/config
+    chmod 400      ~/.ssh/config
     config_ssh_server
     config_ssh_agent
 }
