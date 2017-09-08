@@ -41,6 +41,7 @@ function install_dev() {
     install_packages libssl-dev libpcre3-dev libz-dev
 }
 
+#http://dl.fedoraproject.org/pub/epel/7/x86_64/m/multitail-6.4.2-1.el7.x86_64.rpm
 
 if [ "${RPM_LIST}x" != "x" ]; then
     install_packages $RPM_LIST
