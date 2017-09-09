@@ -1,6 +1,15 @@
 DST,SRC,REMOTE,ETAG
 /.emacs.d/lisp/yaml-mode.el,files/yaml-mode.el,https://raw.githubusercontent.com/yoshiki/yaml-mode/master/yaml-mode.el,"""e257379e4569ca6df410239502f64a0ae0ff52dc"""
+<<<<<<< HEAD
 /.emacs.d/lisp/column-marker.el,files/column-marker.el,https://www.emacswiki.org/emacs/download/column-marker.el,1504863267
 /.emacs.d/lisp/xcscope.el,files/xcscope.el,https://raw.githubusercontent.com/dkogan/xcscope.el/master/xcscope.el,"""bb69beab48faa8e8cc3f83327667e40d02708c72"""
 /.emacs.d/lisp/php-mode.el,files/php-mode.el,https://raw.githubusercontent.com/ejmr/php-mode/master/php-mode.el,"""c666cc59348a6710807087069106c556c745aff4"""
 /.emacs.d/lisp/markdown-mode.el,files/markdown-mode.el,https://raw.githubusercontent.com/defunkt/markdown-mode/master/markdown-mode.el,"""b6a14752a94d54dbe65483b7f2c16de91231666f"""
+=======
+/.emacs.d/lisp/column-marker.el,files/column-marker.el,https://www.emacswiki.org/emacs/download/column-marker.el,1504787850
+/.emacs.d/lisp/xcscope.el,files/xcscope.el,https://raw.githubusercontent.com/dkogan/xcscope.el/master/xcscope.el,"""bb69beab48faa8e8cc3f83327667e40d02708c72"""
+/.emacs.d/lisp/php-mode.el,files/php-mode.el,https://raw.githubusercontent.com/ejmr/php-mode/master/php-mode.el,"""c666cc59348a6710807087069106c556c745aff4"""
+/.emacs.d/lisp/markdown-mode.el,files/markdown-mode.el,https://raw.githubusercontent.com/defunkt/markdown-mode/master/markdown-mode.el,"""b6a14752a94d54dbe65483b7f2c16de91231666f"""
+/.emacs.d/go/go-mode.el,files/go-mode.el,https://raw.githubusercontent.com/dominikh/go-mode.el/master/go-mode.el,"""cde0b72dc361a2e87cfbbfcab98a660d73e05a49"""
+/.emacs.d/go/go-mode-autoloads.el,files/go-mode-autoloads.el,https://raw.githubusercontent.com/dominikh/go-mode.el/master/go-mode-autoloads.el,"""96b27d83399c2f6c22df6a0c669e79be2a2119dd"""
+>>>>>>> b8ce19577f5189e6e569f1281b1b94c9eb5f8bf1
