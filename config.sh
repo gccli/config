@@ -71,14 +71,10 @@ function copyfile() {
 
 function config_emacs() {
     mkdir -p ~/.emacs.d/lisp
-    mkdir -p ~/.emacs.d/go
-
     local version=$(emacs --version | sed -n '1p')
-    local destdir=~/.emacs.d/lisp
-    local src=
-    local dst=
 
     copyfile $PWD/emacs/.emacs ~/
+    copyfile $PWD/emacs/setup-autoinsert ~/.emacs.d/lisp
 
     python download_files.py
     if [ $? -ne 0 ]; then

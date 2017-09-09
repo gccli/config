@@ -1,10 +1,7 @@
 ; basic settings, key-define
+(add-to-list 'load-path "~/.emacs.d/lisp")
 (custom-set-variables '(inhibit-startup-screen t))
 (custom-set-faces)
-(add-to-list 'load-path "~/.emacs.d/lisp")
-(set-register ?1 '(file . "~/core/.emacs.d/.emacs"))
-(set-register ?2 '(file . "~/core/config.sh"))
-(set-register ?3 '(file . "~/mylibrary/learning/emacs.md"))
 
 (setq-default indent-tabs-mode nil)
 (setq tab-width 4)
@@ -14,7 +11,6 @@
 (global-set-key "\M-2" 'mark-word)
 (global-set-key "\C-cw" 'global-whitespace-mode)
 (global-set-key "\C-cp" 'predictive-mode)
-; Jump
 (global-set-key [C-f1] 'jump-to-register)
 (global-set-key [C-f2] 'bookmark-jump)
 (global-set-key [C-f10] 'jump-to-register)
@@ -22,7 +18,8 @@
 
 (global-set-key [M-f1] 'jump-to-register)
 (global-set-key [M-f2] 'bookmark-jump)
-;
+
+; initialize with 2 window
 (defun 2-windows-vertical-to-horizontal ()
   (let ((buffers (mapcar 'window-buffer (window-list))))
     (when (= 2 (length buffers))
@@ -46,10 +43,13 @@
  kept-old-versionps 1
  version-control t)            ; use versioned backups
 
+;; auto insert template
+(add-hook 'find-file-hook 'auto-insert)
+(require 'setup-autoinsert)
+
 ;; cc-mode and cscope
-(load-file "~/.emacs.d/lisp/xcscope.el")
+(require 'xcscope)
 (cscope-setup)
-;(setq cscope-close-window-after-select t)
 (setq cscope-do-not-update-database t)
 (setq cscope-option-use-inverted-index t)
 (setq cscope-index-recursively t)
@@ -59,7 +59,6 @@
 (add-hook 'c-mode-hook (lambda () (column-marker-2 90)))
 
 ;; Toggle window dedication
-
 (defun toggle-window-dedicated ()
   "Toggle whether the current active window is dedicated or not"
   (interactive)
@@ -73,10 +72,6 @@
 
 (global-set-key [pause] 'toggle-window-dedicated)
 
-
-; For go mode
-(add-to-list 'load-path "~/.emacs.d/go")
-(require 'go-mode-autoloads)
 
 ; For yaml mode
 ;(require 'yaml-mode)
@@ -112,7 +107,3 @@
 (load-file "~/.emacs.d/lisp/tex.el")
 (load-file "~/.emacs.d/lisp/predictive.el")
 (put 'TeX-narrow-to-group 'disabled nil)
-
-;(add-to-list 'load-path "~/.emacs.d/wubi")
-;(require 'wubi)
-;(setq default-input-method "chinese-wubi")
