@@ -74,7 +74,7 @@ function config_emacs() {
     local version=$(emacs --version | sed -n '1p')
 
     copyfile $PWD/emacs/.emacs ~/
-    copyfile $PWD/emacs/setup-autoinsert ~/.emacs.d/lisp
+    copyfile $PWD/emacs/setup-autoinsert.el ~/.emacs.d/lisp
 
     python download_files.py
     if [ $? -ne 0 ]; then
