@@ -1,4 +1,4 @@
-IdentityFile ~/.ssh/id_dsa
+IdentityFile ~/.ssh/id_rsa
 ForwardAgent yes
 Port 22
 
