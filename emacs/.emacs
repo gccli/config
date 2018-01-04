@@ -97,6 +97,9 @@
 (setq auto-mode-alist  (cons '("\\.m$" . octave-mode) auto-mode-alist))
 (setq auto-mode-alist  (cons '("\\.php$" . php-mode) auto-mode-alist))
 
+(autoload 'go-mode "go-mode" "Major mode for editing go code." t)
+(setq auto-mode-alist  (cons '("\\.go$" . go-mode) auto-mode-alist))
+
 ; marddown mode
 (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\README\\'" . markdown-mode))

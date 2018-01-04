@@ -75,6 +75,7 @@ function config_emacs() {
 
     copyfile $PWD/emacs/.emacs ~/
     copyfile $PWD/emacs/setup-autoinsert.el ~/.emacs.d/lisp
+    copyfile $PWD/files/go-mode.el ~/.emacs.d/lisp
 
     python download_files.py
     if [ $? -ne 0 ]; then
