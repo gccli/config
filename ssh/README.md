@@ -9,12 +9,14 @@
     $ ssh-copy-id -i ~/core/.ssh/id_rsa.pub -p 2222 lijing@localhost
     $ ssh -p 2222' lijing@localhost
 
-
-
 # 在首次登录时启动ssh-agent
 
 1) 假设已生成好rsa key于~/.ssh目录下
-
 2) 将agentrc文件拷入~/.ssh目录下，在~/.bashrc文件中增加一行
 
     . ~/.ssh/agentrc
+
+
+# Auto ssh tunnel
+
+    ./autossh -f -M 20000 -N -R 0.0.0.0:22222:localhost:22 lijing@public
