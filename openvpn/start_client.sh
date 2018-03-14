@@ -17,14 +17,13 @@ else
     sed -i '/^log/d' client.conf
 fi
 
-snbnet="10.0.2.0/24"
 
 iptables -t nat -F
-#iptables -t nat -A POSTROUTING -s $subnet ! -o eth0 -j MASQUERADE
-#iptables -t nat -A POSTROUTING -p tcp -o eth0 -j SNAT --to 10.8.0.2
+
 
 # SNAT and DNAT
-iptables -t nat -A POSTROUTING -p tcp -o tun0 -j SNAT --to 10.8.0.2
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun0 -j MASQUERADE
+#iptables -t nat -A POSTROUTING -p tcp -o tun0 -j SNAT --to 10.8.0.2
 iptables -t nat -A PREROUTING  -p tcp -m tcp -d 10.0.2.15 --dport 10080 -j DNAT --to-destination 10.8.0.1:10080
 
 # Debug NAT
