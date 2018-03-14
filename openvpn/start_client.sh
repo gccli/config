@@ -2,7 +2,7 @@
 
 secret=$(readlink -f my.key)
 pki_enable=${1:-0}
-daemon=${2:0}
+daemon=${2:-0}
 
 [ $daemon -ne 0 ] && opts="--daemon"
 
