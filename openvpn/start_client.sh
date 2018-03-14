@@ -2,12 +2,15 @@
 
 secret=$(readlink -f my.key)
 pki_enable=${1:-0}
+daemon=${2:0}
+
+[ $daemon -ne 0 ] && opts="--daemon"
 
 if [ ${pki_enable} -eq 0 ]; then
     /bin/cp -f config/client-statickey.conf client.conf
 else
     /bin/cp -f config/client-pki.conf client.conf
-    opts="--askpass /tmp/pass.txt"
+    opts="$opts --askpass /tmp/pass.txt"
 fi
 
 snbnet="10.0.2.0/24"
@@ -28,5 +31,5 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 
 echo -n "Restart openvpn client"
 killall openvpn >/dev/null 2>&1
-i=0; while [ $i -lt 3 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
-openvpn --daemon ${opts} --config client.conf
+i=0; while [ $i -lt 1 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
+openvpn ${opts} --config client.conf
