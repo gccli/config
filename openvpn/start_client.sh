@@ -3,6 +3,7 @@
 secret=$(readlink -f my.key)
 pki_enable=${1:-0}
 daemon=${2:-0}
+opts=
 
 if [ ${pki_enable} -eq 0 ]; then
     /bin/cp -f config/client-statickey.conf client.conf
