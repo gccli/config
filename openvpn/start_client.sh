@@ -1,6 +1,6 @@
 #!/bin/bash
 
-secret=$(readlink -f client.key)
+secret=$(readlink -f my.key)
 
 cat > client.conf <<EOF
 remote server
@@ -28,10 +28,7 @@ iptables -t nat -I POSTROUTING -p tcp -j LOG --log-level debug --log-prefix "[SN
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
+echo -n "Restart openvpn client"
 killall openvpn >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    echo -n "Stop openvpn client"
-    i=0; while [ $i -lt 3 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
-fi
-
+i=0; while [ $i -lt 3 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
 openvpn --daemon --config client.conf
