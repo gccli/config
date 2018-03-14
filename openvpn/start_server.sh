@@ -23,7 +23,7 @@ else
     sed -i "s|^key.*|key $key|" server.conf
     sed -i "s|^cert.*|cert $cert|" server.conf
     sed -i "s|^tls-auth.*|tls-auth $secret 0|" server.conf
-    opts=--askpass
+    opts="--askpass /tmp/pass.txt"
 fi
 if [ $daemon -ne 0 ]; then
     opts="--daemon $opts"
@@ -37,4 +37,4 @@ killall openvpn >/dev/null 2>&1
 i=0; while [ $i -lt 3 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
 
 set -ex
-openvpn --daemon $opts --config server.conf
+openvpn $opts --config server.conf
