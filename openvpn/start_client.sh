@@ -1,16 +1,14 @@
 #!/bin/bash
 
 secret=$(readlink -f my.key)
+pki_enable=${1:-0}
 
-cat > client.conf <<EOF
-remote server
-dev tun
-ifconfig 10.8.0.2 10.8.0.1
-secret $secret
-
-route 192.168.99.0 255.255.255.0
-route 172.16.254.0 255.255.255.0
-EOF
+if [ ${pki_enable} -eq 0 ]; then
+    /bin/cp -f config/client-statickey.conf client.conf
+else
+    /bin/cp -f config/client-pki.conf client.conf
+    opts=--askpass
+fi
 
 snbnet="10.0.2.0/24"
 
@@ -31,4 +29,4 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 echo -n "Restart openvpn client"
 killall openvpn >/dev/null 2>&1
 i=0; while [ $i -lt 3 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
-openvpn --daemon --config client.conf
+openvpn --daemon $opts --config client.conf
