@@ -4,13 +4,16 @@ secret=$(readlink -f my.key)
 pki_enable=${1:-0}
 daemon=${2:-0}
 
-[ $daemon -ne 0 ] && opts="--daemon"
-
 if [ ${pki_enable} -eq 0 ]; then
     /bin/cp -f config/client-statickey.conf client.conf
 else
     /bin/cp -f config/client-pki.conf client.conf
-    opts="$opts --askpass /tmp/pass.txt"
+    opts="--askpass /tmp/pass.txt"
+fi
+if [ $daemon -ne 0 ]; then
+    opts="--daemon $opts"
+else
+    sed -i '/^log/d' client.conf
 fi
 
 snbnet="10.0.2.0/24"
