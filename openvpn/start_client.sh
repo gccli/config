@@ -22,7 +22,7 @@ iptables -t nat -F
 
 
 # SNAT and DNAT
-iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o tun0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 10.0.2.15/24 -o tun0 -j MASQUERADE
 #iptables -t nat -A POSTROUTING -p tcp -o tun0 -j SNAT --to 192.168.88.2
 iptables -t nat -A PREROUTING  -p tcp -m tcp -d 10.0.2.15 --dport 10080 -j DNAT --to-destination 192.168.88.1:10080
 
