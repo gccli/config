@@ -34,7 +34,11 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 
 echo -n "Restart openvpn client"
 killall openvpn >/dev/null 2>&1
-i=0; while [ $i -lt 1 ]; do  echo -n "." && sleep 1 && i=$(($i+1)); done;  echo
+while [ true ]; do
+    echo -n "." && sleep 1
+    killall -0 openvpn >/dev/null 2>&1 || break
+done
+echo
 
 set -ex
 openvpn ${opts} --config client.conf
