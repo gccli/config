@@ -8,6 +8,7 @@ fi
 
 tempdir=$(mktemp -d)
 
+set -ex
 rm -f $name.tar.gz
 cp -f my.key easyrsa/pki/ca.crt easyrsa/pki/issued/${name}.crt easyrsa/pki/private/${name}.key $tempdir
 tar -C $tempdir -czf $name.tar.gz .
