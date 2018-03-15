@@ -8,9 +8,8 @@ if [ "${name}x" == "x" ]; then
 fi
 
 set -ex
-if [ ! -f easyrsa/pki/issued/${name}.crt ]; then
-    cd easyrsa && ./easyrsa build-client-full ${name} nopass
-    sleep 1
+if [ ! -f /opt/easyrsa/pki/issued/${name}.crt ]; then
+    (cd /opt/easyrsa && ./easyrsa build-client-full ${name} nopass && sleep 1)
 fi
 
 cat > /tmp/${name}.ovpn <<EOF
@@ -26,16 +25,16 @@ cipher AES-256-CBC
 pull-filter ignore "redirect-gateway"
 
 <ca>
-$(sed -ne '/^-----BEGIN/,/^-----END/p' easyrsa/pki/ca.crt)
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/ca.crt)
 </ca>
 <cert>
-$(sed -ne '/^-----BEGIN/,/^-----END/p' easyrsa/pki/issued/${name}.crt)
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/issued/${name}.crt)
 </cert>
 <key>
-$(sed -ne '/^-----BEGIN/,/^-----END/p' easyrsa/pki/private/${name}.key)
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/private/${name}.key)
 </key>
 <tls-auth>
-$(sed -ne '/^-----BEGIN/,/^-----END/p' my.key)
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/secret.key)
 </tls-auth>
 EOF
 

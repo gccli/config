@@ -1,0 +1,74 @@
+#!/bin/bash
+
+daemon=${1:-0}
+opts="--config server.ovpn"
+if [ $daemon -ne 0 ]; then
+    opts="--daemon --log /tmp/openvpn.log $opts"
+fi
+
+if [ ! -d /opt/easyrsa/pki ]; then
+    (cd /opt/easyrsa && ./easyrsa init-pki && sleep 1)
+fi
+if [ ! -f /opt/easyrsa/pki/ca.crt ]; then
+    (cd /opt/easyrsa && ./easyrsa build-ca nopass && sleep 1)
+fi
+if [ ! -f /opt/easyrsa/pki/dh.pem ]; then
+    (cd /opt/easyrsa && ./easyrsa gen-dh && sleep 1)
+fi
+if [ ! -f /opt/easyrsa/pki/issued/server.crt ]; then
+    (cd /opt/easyrsa && ./easyrsa build-server-full server nopass && sleep 1)
+fi
+if [ ! -f /opt/secret.key ]; then
+    openvpn --genkey --secret /opt/secret.key && sleep 1
+fi
+
+cat > server.ovpn <<EOF
+port 1194
+proto udp
+dev tun
+server 192.168.88.0 255.255.255.0
+ifconfig-pool-persist /tmp/ipp.txt
+verb 3
+keepalive 15 120
+
+push "route 192.168.99.0 255.255.255.0"
+push "route 172.16.254.0 255.255.255.0"
+push "redirect-gateway def1 bypass-dhcp"
+
+key-direction 0
+cipher AES-256-CBC
+
+compress lzo
+push "compress lzo"
+;push "compress lz4-v2"
+status /tmp/openvpn-status.log
+explicit-exit-notify 1
+
+<dh>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/dh.pem)
+</dh>
+<ca>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/ca.crt)
+</ca>
+<cert>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/issued/server.crt)
+</cert>
+<key>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/private/server.key)
+</key>
+<tls-auth>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/secret.key)
+</tls-auth>
+EOF
+
+
+# Restart OpenVPN
+echo 1 > /proc/sys/net/ipv4/ip_forward
+echo -n "Restart openvpn server"
+killall openvpn >/dev/null 2>&1
+while [ true ]; do
+    echo -n "." && sleep 1
+    killall -0 openvpn >/dev/null 2>&1 || break
+done
+echo
+openvpn $opts
