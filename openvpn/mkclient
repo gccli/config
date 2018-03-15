@@ -1,0 +1,44 @@
+#!/bin/bash
+
+name=$1
+compat=${2:-0}
+if [ "${name}x" == "x" ]; then
+    echo "Usage: $0 name"
+    exit 0
+fi
+
+set -ex
+if [ ! -f easyrsa/pki/issued/${name}.crt ]; then
+    cd easyrsa && ./easyrsa build-client-full ${name} nopass
+    sleep 1
+fi
+
+cat > /tmp/${name}.ovpn <<EOF
+client
+nobind
+verb 3
+dev tun
+proto udp
+remote server 1194
+key-direction 1
+remote-cert-tls server
+cipher AES-256-CBC
+pull-filter ignore "redirect-gateway"
+
+<ca>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' easyrsa/pki/ca.crt)
+</ca>
+<cert>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' easyrsa/pki/issued/${name}.crt)
+</cert>
+<key>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' easyrsa/pki/private/${name}.key)
+</key>
+<tls-auth>
+$(sed -ne '/^-----BEGIN/,/^-----END/p' my.key)
+</tls-auth>
+EOF
+
+if [ $compat -ne 0 ]; then
+    echo comp-lzo >> /tmp/${name}.ovpn
+fi
