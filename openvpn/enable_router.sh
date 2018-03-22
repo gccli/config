@@ -47,5 +47,6 @@ iptables -t nat -F
 if [ $snat -eq 0 ]; then
     iptables -t nat -A POSTROUTING -s ${internal_ip} -o ${external_if} -j MASQUERADE
 else
-    iptables -t nat -A POSTROUTING -o ${external_if} -j SNAT --to ${external_ip}
+    ip=$(echo ${external_ip}|awk -F '/' '{ print $1 }')
+    iptables -t nat -A POSTROUTING -o ${external_if} -j SNAT --to ${ip}
 fi
