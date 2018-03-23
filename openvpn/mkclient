@@ -1,9 +1,31 @@
 #!/bin/bash
 
+remote=server
+port=1194
+domain=
+dns=
+compat=0
+mobile=0
+OPTS=`getopt -a -o r:d:p: -l dns:,compat,mobile -- "$@"`
+
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+while true; do
+  case "$1" in
+    -r ) remote=$2; shift 2;;
+    -d ) domain=$2; shift 2;;
+    -p ) port=$2; shift 2;;
+    -dns ) dns="$dns $2"; shift 2;;
+    -compat ) compat=1; shift;;
+    -mobile ) mobile=1; shift;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
 name=$1
-compat=${2:-0}
 if [ "${name}x" == "x" ]; then
-    echo "Usage: $0 name"
+    echo "Usage: $0 [ -r remote ] [ -p port ] [ -d domain ] [ -c algo ] [ -dns dns ] name"
     exit 0
 fi
 
@@ -15,15 +37,18 @@ fi
 cat > /tmp/${name}.ovpn <<EOF
 client
 nobind
-verb 3
 dev tun
-proto udp
-remote server 1194
+verb 4
+<connection>
+remote $remote $port udp
+</connection>
 key-direction 1
 remote-cert-tls server
 cipher AES-256-CBC
-pull-filter ignore "redirect-gateway"
-
+$([ $mobile -eq 0 ] && echo pull-filter ignore "redirect-gateway")
+comp-lzo
+$(for i in $dns; do echo dhcp-option DNS $i; done)
+$([ "${domain}x" != "x" ] && echo dhcp-option DOMAIN ${domain})
 <ca>
 $(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/ca.crt)
 </ca>
@@ -37,7 +62,3 @@ $(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/easyrsa/pki/private/${name}.key)
 $(sed -ne '/^-----BEGIN/,/^-----END/p' /opt/secret.key)
 </tls-auth>
 EOF
-
-if [ $compat -ne 0 ]; then
-    echo comp-lzo >> /tmp/${name}.ovpn
-fi

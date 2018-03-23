@@ -42,6 +42,7 @@ compress lzo
 push "compress lzo"
 ;push "compress lz4-v2"
 status /tmp/openvpn-status.log
+writepid /tmp/openvpn.pid
 explicit-exit-notify 1
 
 <dh>
