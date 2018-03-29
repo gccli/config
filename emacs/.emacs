@@ -43,6 +43,9 @@
  kept-old-versionps 1
  version-control t)            ; use versioned backups
 
+
+(setq tags-table-list '("/tmp"))
+
 ;; auto insert template
 (add-hook 'find-file-hook 'auto-insert)
 (require 'setup-autoinsert)
