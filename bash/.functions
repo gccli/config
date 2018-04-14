@@ -72,7 +72,13 @@ function gitsubmit() {
 	return
     fi
 
-    git pull
+    local nopull=0
+    for i in $@; do
+        [ "$ix" == "--nopullx" ] && nopull=1
+    done
+
+    [ $nopull -eq 0 ] && git pull
+
     local message=$1
     git commit -a -m "$message"
     if [ $? -ne 0 ]; then
