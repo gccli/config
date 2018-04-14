@@ -1,9 +1,7 @@
 #! /bin/bash
 
 myself=$(readlink -f $0)
-
-# sudo crontab -u csmpdev /tmp/crontab
-cat > /tmp/crontab-$USER <<EOF
+cat > /tmp/crontab <<EOF
 01  04   *    *    *   $myself
 01  08   *    *    *   $myself
 01  12   *    *    *   $myself
@@ -11,9 +9,11 @@ cat > /tmp/crontab-$USER <<EOF
 01  20   *    *    *   $myself
 01  22   *    *    *   $myself
 EOF
+chmod 666 /tmp/crontab
+
 
 function log() {
-    logger -p local0.warn -t "[$0]" -s "$*" 2>&1 | tee -a /tmp/git-$USER.log
+    logger -p local0.warn -t "[$0]" -s "$*" 2>&1 | tee -a ~/.git.log
 }
 
 function gitupdate() {
