@@ -99,6 +99,12 @@
 
 (autoload 'go-mode "go-mode" "Major mode for editing go code." t)
 (setq auto-mode-alist  (cons '("\\.go$" . go-mode) auto-mode-alist))
+(add-hook 'go-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'gofmt-before-save)
+            (setq tab-width 4)
+            (setq indent-tabs-mode 1)))
+
 
 ; marddown mode
 (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
