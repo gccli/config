@@ -5,8 +5,8 @@
 ;; Author: USAMI Kenta <tadsan@zonu.me>
 ;; Keywords: tools, files
 ;; URL: https://github.com/ejmr/php-mode
-;; Version: 1.19.0
-;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
+;; Version: 1.19.1
+;; Package-Requires: ((emacs "24.3") (cl-lib "0.5"))
 ;; License: GPL-3.0-or-later
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -88,50 +88,50 @@
 
 ;;;###autoload
 (progn
-  (defvar php-project-root 'auto
+  (defvar-local php-project-root 'auto
     "Method of searching for the top level directory.
 
 `auto' (default)
       Try to search file in order of `php-project-available-root-files'.
 
 SYMBOL
-      Key of `php-project-available-root-files'.")
-  (make-variable-buffer-local 'php-project-root)
+      Key of `php-project-available-root-files'.
+
+STRING
+      A file/directory name of top level marker.
+      If the string is an actual directory path, it is set as the absolute path
+      of the root directory, not the marker.")
   (put 'php-project-root 'safe-local-variable
-       #'(lambda (v) (assq v php-project-available-root-files))))
+       #'(lambda (v) (or (stringp v) (assq v php-project-available-root-files)))))
 
 ;;;###autoload
 (progn
-  (defvar php-project-bootstrap-scripts nil
+  (defvar-local php-project-bootstrap-scripts nil
     "List of path to bootstrap php script file.
 
 The ideal bootstrap file is silent, it only includes dependent files,
 defines constants, and sets the class loaders.")
-  (make-variable-buffer-local 'php-project-bootstrap-scripts)
   (put 'php-project-bootstrap-scripts 'safe-local-variable #'php-project--eval-bootstrap-scripts))
 
 ;;;###autoload
 (progn
-  (defvar php-project-php-executable nil
+  (defvar-local php-project-php-executable nil
     "Path to php executable file.")
-  (make-variable-buffer-local 'php-project-php-executable)
   (put 'php-project-php-executable 'safe-local-variable
        #'(lambda (v) (and (stringp v) (file-executable-p v)))))
 
 ;;;###autoload
 (progn
-  (defvar php-project-phan-executable nil
+  (defvar-local php-project-phan-executable nil
     "Path to phan executable file.")
-  (make-variable-buffer-local 'php-project-phan-executable)
   (put 'php-project-phan-executable 'safe-local-variable #'php-project--eval-bootstrap-scripts))
 
 ;;;###autoload
 (progn
-  (defvar php-project-coding-style nil
+  (defvar-local php-project-coding-style nil
     "Symbol value of the coding style of the project that PHP major mode refers to.
 
 Typically it is `pear', `drupal', `wordpress', `symfony2' and `psr2'.")
-  (make-variable-buffer-local 'php-project-coding-style)
   (put 'php-project-coding-style 'safe-local-variable #'symbolp))
 
 
@@ -177,15 +177,17 @@ Typically it is `pear', `drupal', `wordpress', `symfony2' and `psr2'.")
 ;;;###autoload
 (defun php-project-get-root-dir ()
   "Return path to current PHP project."
-  (let ((detect-method
-         (cond
-          ((stringp php-project-root) (list php-project-root))
-          ((eq php-project-root 'auto)
-           (cl-loop for m in php-project-available-root-files
-                    append (cdr m)))
-          (t (cdr-safe (assq php-project-root php-project-available-root-files))))))
-    (cl-loop for m in detect-method
-             thereis (locate-dominating-file default-directory m))))
+  (if (and (stringp php-project-root) (file-directory-p php-project-root))
+      php-project-root
+    (let ((detect-method
+           (cond
+            ((stringp php-project-root) (list php-project-root))
+            ((eq php-project-root 'auto)
+             (cl-loop for m in php-project-available-root-files
+                      append (cdr m)))
+            (t (cdr-safe (assq php-project-root php-project-available-root-files))))))
+      (cl-loop for m in detect-method
+               thereis (locate-dominating-file default-directory m)))))
 
 (provide 'php-project)
 ;;; php-project.el ends here

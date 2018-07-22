@@ -3,6 +3,7 @@
 import os
 import sys
 import csv
+import time
 import pycurl
 import httplib
 import functools
@@ -119,7 +120,7 @@ class Request(object):
             print 'PyCURL open {0} error {1} - {2}'.format(self.url, errno, self.curl.errstr())
             return None
 
-def main():
+def main(reset=0):
     csv_old = 'files/files.txt'
     csv_new = '/tmp/files.txt'
     csv_r = open(csv_old, 'r')
@@ -128,21 +129,38 @@ def main():
     writer = csv.writer(csv_w)
     writer.writerow(reader.next())
 
+    if reset:
+        for row in reader:
+            row[3]=''
+            row[4]='0'
+            writer.writerow(row)
+        csv_r.close()
+        csv_w.close()
+        shutil.copyfile('/tmp/files.txt', 'files/files.txt')
+        print 'reset all'
+        return
+
     for row in reader:
         dst = os.getenv('HOME')+row[0]
         src = os.getcwd() + '/' + row[1]
         remote = row[2]
         etag = row[3]
+        last_modify = int(row[4])
 
-        req = Request(row[2], headers={'If-None-Match': etag})
-        rsp = req.request()
-        if not rsp:
-            sys.exit(1)
+        if time.time() - last_modify > 30*86400:
+            print 'need update'
 
-        if rsp.code != 304:
-            row[3] = rsp.headers.get('ETag', '')
-            print 'download {0} and out {1}'.format(remote, src), row[3]
-            open(src, 'wb').write(rsp.body)
+            req = Request(row[2], headers={'If-None-Match': etag})
+            rsp = req.request()
+            if not rsp:
+                print 'Request timeout'
+            elif rsp.code != 304:
+                row[3] = rsp.headers.get('ETag', '').strip('"')
+                row[4] = int(time.time())
+                print 'download {0} and out {1}'.format(remote, src), row[3]
+                open(src, 'wb').write(rsp.body)
+        else: print 'just use cached file'
+
 
         writer.writerow(row)
         print 'cp {0} {1}'.format(src, dst)
@@ -154,7 +172,7 @@ def main():
     shutil.copyfile('/tmp/files.txt', 'files/files.txt')
 
 if 1:
-    main()
+    main(len(sys.argv) > 1 and sys.argv[1] == '-r')
     sys.exit(0)
 else:
     url = 'https://www.emacswiki.org/emacs/download/column-marker.el'

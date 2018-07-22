@@ -1,7 +1,7 @@
-DST,SRC,REMOTE,ETAG
-/.emacs.d/lisp/yaml-mode.el,files/yaml-mode.el,https://raw.githubusercontent.com/yoshiki/yaml-mode/master/yaml-mode.el,"""c3416dd6cf983b59f259ead368bd701b9292edbc"""
-/.emacs.d/lisp/column-marker.el,files/column-marker.el,https://www.emacswiki.org/emacs/download/column-marker.el,1522002384
-/.emacs.d/lisp/xcscope.el,files/xcscope.el,https://raw.githubusercontent.com/dkogan/xcscope.el/master/xcscope.el,"""bb69beab48faa8e8cc3f83327667e40d02708c72"""
-/.emacs.d/lisp/php-mode.el,files/php-mode.el,https://raw.githubusercontent.com/ejmr/php-mode/master/php-mode.el,"""6a1ffd2c8d85455d14f7f78911e84a70a0779958"""
-/.emacs.d/lisp/php-project.el,files/php-project.el,https://raw.githubusercontent.com/ejmr/php-mode/master/php-project.el,"""c36c81f7af1fda5f8899129f2fabdc4f52b86a49"""
-/.emacs.d/lisp/markdown-mode.el,files/markdown-mode.el,https://raw.githubusercontent.com/defunkt/markdown-mode/master/markdown-mode.el,"""790b5a243025bdc75a08cc03356f840e3d4e6b49"""
+DST,SRC,REMOTE,ETAG,LAST_MODIFY
+/.emacs.d/lisp/yaml-mode.el,files/yaml-mode.el,https://raw.githubusercontent.com/yoshiki/yaml-mode/master/yaml-mode.el,9f76c38ef3e491f691557a5402a3908d3332542d,1532269013
+/.emacs.d/lisp/column-marker.el,files/column-marker.el,https://www.emacswiki.org/emacs/download/column-marker.el,1532253632,1532269014
+/.emacs.d/lisp/xcscope.el,files/xcscope.el,https://raw.githubusercontent.com/dkogan/xcscope.el/master/xcscope.el,e6f8a6bf38a295d1c765ae7941690e82b55f35be,1532269014
+/.emacs.d/lisp/php-mode.el,files/php-mode.el,https://raw.githubusercontent.com/ejmr/php-mode/master/php-mode.el,d8f58941327eaaba6d650bda3926dbfffbed60a2,1532269014
+/.emacs.d/lisp/php-project.el,files/php-project.el,https://raw.githubusercontent.com/ejmr/php-mode/master/php-project.el,53275b973abb08aa94b31eca04af9106f8389b3b,1532269014
+/.emacs.d/lisp/markdown-mode.el,files/markdown-mode.el,https://raw.githubusercontent.com/defunkt/markdown-mode/master/markdown-mode.el,66bf4dfca4b407e110344fd75ca3f2cc79f570c9,1532269015
