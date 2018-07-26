@@ -171,7 +171,7 @@ function config_ssh_agent()
 
     local line=". ~/.ssh/agentrc"
     if [ $opt_cfg_rsa -eq 0 ]; then
-        rm -f $DST ~/.ssh/agentrc ~/.ssh/environment
+        rm -f ~/.ssh/agentrc ~/.ssh/environment
         return
     fi
 
