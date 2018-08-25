@@ -23,7 +23,7 @@ if [ ! -f /opt/secret.key ]; then
 fi
 
 cat > server.ovpn <<EOF
-port 4658
+port 1194
 proto udp
 dev tun
 server 192.168.88.0 255.255.255.0
@@ -66,10 +66,10 @@ EOF
 # Restart OpenVPN
 echo 1 > /proc/sys/net/ipv4/ip_forward
 echo -n "Restart openvpn server"
-killall openvpn >/dev/null 2>&1
+pkill openvpn >/dev/null 2>&1
 while [ true ]; do
     echo -n "." && sleep 1
-    killall -0 openvpn >/dev/null 2>&1 || break
+    pkill -0 openvpn >/dev/null 2>&1 || break
 done
 echo
 openvpn $opts
