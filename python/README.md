@@ -14,12 +14,7 @@ Install pip
     # Install pip, alternative method
     ./get-pip.py --no-index --find-links=./
 
-Download python dependencies
-============================
-
-    ./download.sh
-
 Install python dependencies
 ===========================
 
-    pip install --no-index --find-links=pydeps -r pydeps/requirements.txt
+    ./install.sh

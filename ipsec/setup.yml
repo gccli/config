@@ -1,0 +1,12 @@
+- name: Config csmp VM
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  tasks:
+    - name: Install RPM deps
+      yum: name=epel-release state=latest
+    - name: upgrade all packages
+      yum: name='*' state=latest
+    - name: ensure a list of packages installed
+      yum:
+        name: "{{ RPM_DEPS }}"
