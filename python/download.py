@@ -28,7 +28,7 @@ def download(url, dest):
     resp_body = cStringIO.StringIO()
     resp_headers = {}
     gzip_enable = 0
-    verbose = 1
+    verbose = 0
 
     dn = os.path.dirname(dest)
     fn = os.path.basename(dest)
