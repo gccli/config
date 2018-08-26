@@ -1,0 +1,7 @@
+---
+- name: Install xl2tp
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  roles:
+    - xl2tpd

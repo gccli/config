@@ -2,7 +2,7 @@
 - name: Install ipsec
   hosts: localhost
   connection: local
-  gather_facts: yes
+  gather_facts: no
   tasks:
     - name: Install epel
       yum: name=epel-release state=latest
@@ -11,5 +11,10 @@
     - name: ensure a list of packages installed
       yum:
         name: "{{ RPM_DEPS }}"
+
+  roles:
+    - xl2tpd
+    - libreswan
+
   vars_files:
     - ipsec.yml
