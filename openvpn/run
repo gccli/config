@@ -23,7 +23,7 @@ if [ ! -f /opt/secret.key ]; then
 fi
 
 cat > server.ovpn <<EOF
-port 1194
+port 55555
 proto udp
 dev tun
 server 192.168.88.0 255.255.255.0
