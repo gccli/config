@@ -1,5 +1,5 @@
 ---
 - name: download file
-  remote_src: yes
-  src: {{ libreswan.url }}
+  get_url:
+  url: {{ libreswan.url }}
   dest: /opt/{{ os.path.basename(libreswan.url) }}

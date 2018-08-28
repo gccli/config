@@ -1,8 +1,11 @@
 #! /bin/bash
 
-yum install -y python-devel
+if [ -n "$1" ]; then
+    index="-i https://pypi.tuna.tsinghua.edu.cn/simple"
+fi
+yum install -y python-devel gcc
 python download.py
-python get-pip.py -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+python get-pip.py ${index}
+pip install -U ${index} -r requirements.txt
 
 cd mytools && make install

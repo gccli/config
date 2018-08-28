@@ -1,5 +1,5 @@
 ---
 - name: download file
-  remote_src: yes
-  src: "{{ xl2tpd.url }}"
+  get_url:
+  url: "{{ xl2tpd.url }}"
   dest: /opt/{{ os.path.basename(xl2tpd.url) }}
