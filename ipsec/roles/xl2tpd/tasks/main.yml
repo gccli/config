@@ -1,5 +1,13 @@
 ---
-- name: download file
-  get_url:
-  url: "{{ xl2tpd.url }}"
-  dest: /opt/{{ os.path.basename(xl2tpd.url) }}
+- name: Copy config files
+  template: src="{{ item.src }}" dest="{{ item.dst }}"
+  with_items:
+    - src: xl2tpd.conf.j2
+      dst: /etc/xl2tpd/xl2tpd.conf
+    - src: options.xl2tpd.j2
+      dst: /etc/ppp/options.xl2tpd
+    - src: chap-secrets
+      dst: /etc/ppp/chap-secrets
+
+- name: restart xl2tpd
+  service: name=xl2tpd state=restarted enabled=yes

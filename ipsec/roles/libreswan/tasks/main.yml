@@ -1,5 +1,23 @@
 ---
+- name: Creates directory
+  file: path="{{ libreswan.dest }}" state=directory
+
 - name: download file
-  get_url:
-  url: {{ libreswan.url }}
-  dest: /opt/{{ os.path.basename(libreswan.url) }}
+  unarchive:
+    src: "{{ libreswan.url }}"
+    dest: "{{ libreswan.dest }}"
+    remote_src: yes
+    extra_opts:
+      - --strip=1
+
+- name: Add line to Makefile.inc
+  lineinfile:
+    dest: "{{ libreswan.dest }}/Makefile.inc.local"
+    line: "USE_DNSSEC=false"
+    state: present
+
+- name: Build and install
+  shell: "make -C {{ libreswan.dest }} base && make -C {{ libreswan.dest }} install"
+
+- name: restart ipsec
+  service: name=ipsec state=restarted enabled=yes

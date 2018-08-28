@@ -10,11 +10,14 @@
       yum: name='*' state=latest
     - name: ensure a list of packages installed
       yum:
-        name: "{{ RPM_DEPS }}"
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ RPM_DEPS }}"
 
+- name: Install ipsec
+  hosts: localhost
+  connection: local
+  gather_facts: no
   roles:
     - xl2tpd
     - libreswan
-
-  vars_files:
-    - ipsec.yml
