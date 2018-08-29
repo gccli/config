@@ -1,4 +1,13 @@
 ---
+- name: Check variables
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - fail:
+        msg: "Whoops! Please define variables in all.yml"
+        when: ({{ VPN_IPSEC_PSK }} == '') or ({{ VPN_USER }} == '') or ({{VPN_PASSWORD}} == '')
+
 - name: Install ipsec
   hosts: localhost
   connection: local
@@ -18,13 +27,15 @@
       script: "/sbin/ip route|egrep '^default'|sed 's/.*dev //'"
       register: rx
 
-    - set_faces:
-        net_iface: {{ rx.stdout }}
+    - set_fact:
+        net_iface: "{{ rx.stdout }}"
 
 - name: Install xl2tpd and libreswan
   hosts: localhost
   connection: local
   gather_facts: no
   roles:
+    - sysctl
     - xl2tpd
     - libreswan
+    - iptables

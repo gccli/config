@@ -7,7 +7,7 @@
       dst: /etc/xl2tpd/xl2tpd.conf
     - src: options.xl2tpd.j2
       dst: /etc/ppp/options.xl2tpd
-    - src: chap-secrets
+    - src: chap-secrets.j2
       dst: /etc/ppp/chap-secrets
 
 - name: restart xl2tpd

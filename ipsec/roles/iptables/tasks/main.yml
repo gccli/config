@@ -2,10 +2,9 @@
   service: name=firewalld state=stop enabled=no
 
 - name: Copy scripts
-  template: src=set-fw.sh dest=/tmp/set-fw.sh mode=0700
+  template: src=set-fw.sh.j2 dest=/tmp/set-fw.sh mode=0700
 
-- name: Run scripts
-  scripts: /tmp/set-fw.sh
+- script: /tmp/set-fw.sh
 
 - name: Restart iptables
   service: name=iptables state=restarted enabled=yes
