@@ -4,9 +4,12 @@
   connection: local
   gather_facts: no
   tasks:
-    - fail:
-        msg: "Whoops! Please define variables in all.yml"
-        when: ({{ VPN_IPSEC_PSK }} == '') or ({{ VPN_USER }} == '') or ({{VPN_PASSWORD}} == '')
+    - fail: msg="VPN_IPSEC_PSK must non-empty"
+      when: VPN_IPSEC_PSK == ''
+    - fail: msg="VPN_USER must non-empty"
+      when: VPN_USER == ''
+    - fail: msg="VPN_PASSWORD must non-empty"
+      when: VPN_PASSWORD == ''
 
 - name: Install ipsec
   hosts: localhost
@@ -29,6 +32,11 @@
 
     - set_fact:
         net_iface: "{{ rx.stdout }}"
+    - sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        sysctl_set: yes
+        state: present
 
 - name: Install xl2tpd and libreswan
   hosts: localhost

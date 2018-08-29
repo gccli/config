@@ -1,5 +1,5 @@
 - name: Disable firewalld
-  service: name=firewalld state=stop enabled=no
+  service: name=firewalld state=stopped enabled=no
 
 - name: Copy scripts
   template: src=set-fw.sh.j2 dest=/tmp/set-fw.sh mode=0700

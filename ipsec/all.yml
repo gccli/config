@@ -9,15 +9,15 @@ DNS_SERVER:
   - 8.8.8.8
   - 114.114.114.114
 
-VPN_IPSEC_PSK:
-VPN_USER:
-VPN_PASSWORD:
+VPN_IPSEC_PSK: 8785865aca321241f7ef288233e32286
+VPN_USER: lijing
+VPN_PASSWORD: cc
 
 RPM_DEPS:
   - epel-release
   - bind-utils
   - openssl
-  - iptables
+  - iptables-services
   - iproute
   - gawk
   - net-tools

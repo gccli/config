@@ -1,7 +1,6 @@
 ---
 - name: Copy config files
-  template: src="{{ item.src }}" dest="{{ item.dst }}"
-  mode: 0600
+  template: src="{{ item.src }}" dest="{{ item.dst }}" mode=0600
   with_items:
     - src: xl2tpd.conf.j2
       dst: /etc/xl2tpd/xl2tpd.conf
