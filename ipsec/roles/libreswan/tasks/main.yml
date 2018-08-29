@@ -46,7 +46,7 @@
     - src: passwd.j2
       dst: /etc/ipsec.d/passwd
     - src: ipsec.secrets.j2
-      dst: /etc/ppp/ipsec.secrets
+      dst: /etc/ipsec.secrets
 
 - name: restart ipsec
   service: name=ipsec state=restarted enabled=yes
