@@ -1,12 +1,12 @@
 config setup
-  virtual-private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:!$L2TP_NET,%v4:!$XAUTH_NET
+  virtual-private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:!{{ L2TP_NET }},%v4:!{{ XAUTH_NET }}
   protostack=netkey
   interfaces=%defaultroute
   uniqueids=no
 
 conn shared
   left=%defaultroute
-  leftid=$PUBLIC_IP
+  leftid={{ my_public_ip }}
   right=%any
   encapsulation=yes
   authby=secret
@@ -31,9 +31,9 @@ conn l2tp-psk
 conn xauth-psk
   auto=add
   leftsubnet=0.0.0.0/0
-  rightaddresspool=$XAUTH_POOL
-  modecfgdns1=$DNS_SRV1
-  modecfgdns2=$DNS_SRV2
+  rightaddresspool={{ XAUTH_POOL }}
+  modecfgdns1={{ DNS_SERVER[0] }}
+  modecfgdns2={{ DNS_SERVER[1] }}
   leftxauthserver=yes
   rightxauthclient=yes
   leftmodecfgserver=yes

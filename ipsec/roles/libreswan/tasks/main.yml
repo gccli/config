@@ -2,7 +2,7 @@
 - name: Creates directory
   file: path="{{ libreswan.dest }}" state=directory
 
-- name: download file
+- name: Download libreswan
   unarchive:
     src: "{{ libreswan.url }}"
     dest: "{{ libreswan.dest }}"
@@ -18,6 +18,30 @@
 
 - name: Build and install
   shell: "make -C {{ libreswan.dest }} base && make -C {{ libreswan.dest }} install"
+
+- name: Encrypt password
+  command: openssl passwd -1 {{ VPN_PASSWORD }}
+  register: rx
+#- debug: var=rx
+- set_fact:
+    vpn_password_enc: "{{ rx.stdout }}"
+
+- name: Get public IP address
+  command: dig @resolver1.opendns.com -t A -4 myip.opendns.com +short
+  register: rr
+- set_fact:
+    my_public_ip: "{{ rr.stdout }}"
+
+- name: Copy config files
+  template: src="{{ item.src }}" dest="{{ item.dst }}"
+  mode: 0600
+  with_items:
+    - src: ipsec.conf.j2
+      dst: /etc/ipsec.conf
+    - src: passwd.j2
+      dst: /etc/ipsec.d/passwd
+    - src: ipsec.secrets.j2
+      dst: /etc/ppp/ipsec.secrets
 
 - name: restart ipsec
   service: name=ipsec state=restarted enabled=yes

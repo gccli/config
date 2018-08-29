@@ -14,7 +14,14 @@
         state: latest
       with_items: "{{ RPM_DEPS }}"
 
-- name: Install ipsec
+    - name: Get default network interface
+      script: "/sbin/ip route|egrep '^default'|sed 's/.*dev //'"
+      register: rx
+
+    - set_faces:
+        net_iface: {{ rx.stdout }}
+
+- name: Install xl2tpd and libreswan
   hosts: localhost
   connection: local
   gather_facts: no

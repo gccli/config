@@ -1,0 +1,9 @@
+---
+- name: Copy sysctl config files
+  template: src="{{ item.src }}" dest="{{ item.dst }}"
+  with_items:
+    - src: etc/sysctl.d/ipsec.conf
+      dst: /etc/sysctl.d/ipsec.conf
+
+- name: Reload sysctl.conf
+  command: sysctl -e -q -p
