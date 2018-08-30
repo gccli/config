@@ -5,6 +5,8 @@
 - stat: path=/usr/local/sbin/ipsec
   register: st
 
+- debug: var=st
+
 - name: Download libreswan
   unarchive:
     src: "{{ libreswan.url }}"
@@ -12,18 +14,16 @@
     remote_src: yes
     extra_opts:
       - --strip=1
-  when: st.stat.exists is undefined
+  when: st.stat.exists is undefined or not st.stat.exists
 
 - name: Add line to Makefile.inc
-  lineinfile:
+  template:
+    src: Makefile.inc.local
     dest: "{{ libreswan.dest }}/Makefile.inc.local"
-    line: "USE_DNSSEC=false"
-    state: present
-  when: st.stat.exists is undefined
 
 - name: Build and install
   shell: "make -C {{ libreswan.dest }} base && make -C {{ libreswan.dest }} install"
-  when: st.stat.exists is undefined
+  when: st.stat.exists is undefined or not st.stat.exists
 
 - name: Encrypt password
   command: openssl passwd -1 {{ VPN_PASSWORD }}
