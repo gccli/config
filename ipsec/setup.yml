@@ -31,7 +31,9 @@
       register: rx
 
     - set_fact:
-        net_iface: "{{ rx.stdout }}"
+        net_iface: "{{ rx.stdout.strip() }}"
+
+    - debug: var=net_iface
     - sysctl:
         name: net.ipv4.ip_forward
         value: 1

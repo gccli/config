@@ -15,7 +15,7 @@ iptables -I FORWARD 1 -m conntrack --ctstate INVALID -j DROP
 iptables -I FORWARD 2 -i {{ net_iface }} -o ppp+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -I FORWARD 3 -i ppp+ -o {{ net_iface }} -j ACCEPT
 iptables -I FORWARD 4 -i ppp+ -o ppp+ -s {{ L2TP_NET }} -d {{ L2TP_NET }} -j ACCEPT
-iptables -I FORWARD 5 -i {{ net_iface }} -d "$XAUTH_NET" -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -I FORWARD 5 -i {{ net_iface }} -d {{ XAUTH_NET }} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -I FORWARD 6 -s {{ XAUTH_NET }} -o {{ net_iface }} -j ACCEPT
 # Uncomment if you wish to disallow traffic between VPN clients themselves
 # iptables -I FORWARD 2 -i ppp+ -o ppp+ -s {{ L2TP_NET }} -d {{ L2TP_NET }} -j DROP
