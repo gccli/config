@@ -3,7 +3,10 @@
   template: src="{{ item.src }}" dest="{{ item.dst }}"
   with_items:
     - src: etc/sysctl.d/ipsec.conf.j2
-      dst: /etc/sysctl.d/ipsec.conf
+      dst: /etc/sysctl.d/88-ipsec.conf
 
 - name: Reload sysctl.conf
-  command: sysctl -e -q -p
+  command: /sbin/sysctl -e -p
+  register: rr
+
+- debug: var=rr.stdout_lines
