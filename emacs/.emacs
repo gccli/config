@@ -113,6 +113,6 @@
 (setq markdown-enable-math t)
 
 ; LeX settings
-(load-file "~/.emacs.d/lisp/tex.el")
-(load-file "~/.emacs.d/lisp/predictive.el")
-(put 'TeX-narrow-to-group 'disabled nil)
+;(load-file "~/.emacs.d/lisp/tex.el")
+;(load-file "~/.emacs.d/lisp/predictive.el")
+;(put 'TeX-narrow-to-group 'disabled nil)

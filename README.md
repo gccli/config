@@ -1,8 +1,6 @@
-# 配置Linux开发环境
+# 定制化Linux开发环境
 
-一个新装的Linux(CentOS, Ubuntu)系统或多或少与自己的使用习惯有些不同，因此，为了使用更顺手，需要对之进行一些配置。通过运行一个脚本达到一键配置的效果。
-
-基本配置包括：
+在CentOS Linux系统自动化部署和配置定制化的开发环境，基本配置包括：
 
 * Bash shell
    - 定义一些方便的别名和函数
@@ -13,3 +11,9 @@
 * ssh & ssh-agent
    - 配置RSA key, 用于ssh认证
 * 配置一些开发工具 (python, gdb, ...)
+
+## 安装配置
+
+    curl -L git.io/cloudinit|bash
+
+##

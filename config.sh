@@ -69,28 +69,6 @@ function copyfile() {
     fi
 }
 
-function config_emacs() {
-    mkdir -p ~/.emacs.d/lisp
-    local version=$(emacs --version | sed -n '1p')
-
-    copyfile $PWD/emacs/.emacs ~/
-    copyfile $PWD/emacs/setup-autoinsert.el ~/.emacs.d/lisp
-    copyfile $PWD/files/go-mode.el ~/.emacs.d/lisp
-
-    python download_files.py
-    if [ $? -ne 0 ]; then
-        die "download file"
-    fi
-
-    if which latex 2>&1 >/dev/null ; then
-        copyfile $PWD/emacs/tex.el ~/.emacs.d/lisp/
-        copyfile $PWD/emacs/predictive.el ~/.emacs.d/lisp/
-    else
-        touch ~/.emacs.d/lisp/tex.el
-        touch ~/.emacs.d/lisp/predictive.el
-    fi
-    notice "config emacs $version"
-}
 
 function check_config() {
     local bashlocal=~/.bash_local
@@ -276,6 +254,6 @@ echo
 check_config
 config_bash
 config_git
-config_emacs
+./setup-emacs.sh
 config_ssh
 echo 'Done'

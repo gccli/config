@@ -4817,6 +4817,20 @@ text to kill ring), and list items."
      (t
       (user-error "Nothing found at point to kill")))))
 
+(defun markdown-kill-outline ()
+  "Kill visible heading and add it to `kill-ring'."
+  (interactive)
+  (save-excursion
+    (markdown-outline-previous)
+    (kill-region (point) (progn (markdown-outline-next) (point)))))
+
+(defun markdown-kill-block ()
+  "Kill visible code block, list item, or blockquote and add it to `kill-ring'."
+  (interactive)
+  (save-excursion
+    (markdown-backward-block)
+    (kill-region (point) (progn (markdown-forward-block) (point)))))
+
 
 ;;; Indentation ====================================================================
 
@@ -5283,6 +5297,7 @@ Assumes match data is available for `markdown-regex-italic'."
     (define-key map (kbd "P") 'markdown-pre-region)
     (define-key map (kbd "q") 'markdown-insert-blockquote)
     (define-key map (kbd "s") 'markdown-insert-strike-through)
+    (define-key map (kbd "t") 'markdown-insert-table)
     (define-key map (kbd "Q") 'markdown-blockquote-region)
     (define-key map (kbd "w") 'markdown-insert-wiki-link)
     (define-key map (kbd "-") 'markdown-insert-hr)
@@ -5528,6 +5543,7 @@ See also `markdown-mode-map'.")
       :enable (markdown-table-at-point-p)]
      ["Insert Column" markdown-table-insert-column
       :enable (markdown-table-at-point-p)]
+     ["Insert Table" markdown-insert-table]
      "--"
      ["Convert Region to Table" markdown-table-convert-region]
      ["Sort Table Lines" markdown-table-sort-lines
@@ -9334,6 +9350,37 @@ spaces, or alternatively a TAB should be used as the separator."
       (while (re-search-forward re end t) (replace-match "| " t t)))
     (goto-char begin)
     (markdown-table-align)))
+
+(defun markdown-insert-table (&optional rows columns align)
+  "Insert an empty pipe table.
+Optional arguments ROWS, COLUMNS, and ALIGN specify number of
+rows and columns and the column alignment."
+  (interactive)
+  (let* ((rows (or rows (string-to-number (read-string "Row size: "))))
+         (columns (or columns (string-to-number (read-string "Column size: "))))
+         (align (or align (read-string "Alignment ([l]eft, [r]ight, [c]enter, or RET for default): ")))
+         (align (cond ((equal align "l") ":--")
+                      ((equal align "r") "--:")
+                      ((equal align "c") ":-:")
+                      (t "---")))
+         (pos (point))
+         (indent (make-string (current-column) ?\ ))
+         (line (concat
+                (apply 'concat indent "|"
+                       (make-list columns "   |")) "\n"))
+         (hline (apply 'concat indent "|"
+                       (make-list columns (concat align "|")))))
+    (if (string-match
+         "^[ \t]*$" (buffer-substring-no-properties
+                     (point-at-bol) (point)))
+        (beginning-of-line 1)
+      (newline))
+    (dotimes (_ rows) (insert line))
+    (goto-char pos)
+    (if (> rows 1)
+        (progn
+          (end-of-line 1) (insert (concat "\n" hline)) (goto-char pos)))
+    (markdown-table-forward-cell)))
 
 
 ;;; ElDoc Support
