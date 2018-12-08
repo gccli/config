@@ -16,4 +16,6 @@
 
     curl -L git.io/cloudinit|bash
 
-##
+## 配置emacs
+
+    curl -L https://git.io/emacsinit|bash -x
