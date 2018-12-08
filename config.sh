@@ -254,6 +254,6 @@ echo
 check_config
 config_bash
 config_git
-./setup-emacs.sh
+./config-emacs.sh
 config_ssh
 echo 'Done'
