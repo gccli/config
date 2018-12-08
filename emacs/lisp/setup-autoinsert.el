@@ -21,7 +21,6 @@
 
 (add-hook 'python-mode-hook
           (lambda ()
-            (electric-indent-local-mode -1)
             (if (= (buffer-size) 0)
                 (newpython))
             (not-modified)
@@ -30,7 +29,6 @@
 
 (add-hook 'sh-mode-hook
           (lambda ()
-            (electric-indent-local-mode -1)
             (if (= (buffer-size) 0)
                 (newshell))
             (not-modified)
