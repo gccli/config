@@ -19,3 +19,7 @@
 ## 配置emacs
 
     curl -L https://git.io/emacsinit|bash -x
+
+Generate shortutl by git.io
+
+    curl -i https://git.io -F 'url=http://domain/path' -F 'code=shorturl'
