@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+mkdir -p ~/.emacs.d/lisp
+
 if [ -d emacs/lisp ]; then
     python emacs/cache.py update
     find ~/.emacs.d/lisp -type f | xargs rm -f
@@ -9,8 +11,8 @@ if [ -d emacs/lisp ]; then
         done
     /bin/cp emacs/.emacs ~/
 else
-    cd ~/
-    curl -JO https://raw.githubusercontent.com/gccli/config/master/emacs/.emacs
+    curl https://raw.githubusercontent.com/gccli/config/master/emacs/.emacs > ~/.emacs
+    [ $? -ne 0 ] && exit 1
     cd ~/.emacs.d/lisp
     curl -JO https://raw.githubusercontent.com/gccli/config/master/emacs/lisp/column-marker.el &
     curl -JO https://raw.githubusercontent.com/gccli/config/master/emacs/lisp/go-mode.el &

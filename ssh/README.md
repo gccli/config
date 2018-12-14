@@ -20,3 +20,5 @@
 # Auto ssh tunnel
 
     ./autossh -f -M 20000 -N -R 0.0.0.0:22222:localhost:22 lijing@public
+
+    ./autossh -M 28080 -N -R 0.0.0.0:10080:localhost:80 demo@public
