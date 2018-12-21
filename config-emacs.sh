@@ -1,15 +1,15 @@
-#!/bin/bash -ex
+#!/bin/bash -x
 
 mkdir -p ~/.emacs.d/lisp
 
 if [ -d emacs/lisp ]; then
+    /bin/cp emacs/.emacs ~/
     python emacs/cache.py update
     find ~/.emacs.d/lisp -type f | xargs rm -f
     find emacs/lisp -type f | \
         while read line; do
             /bin/cp $line  ~/.emacs.d/lisp
         done
-    /bin/cp emacs/.emacs ~/
 else
     curl https://raw.githubusercontent.com/gccli/config/master/emacs/.emacs > ~/.emacs
     [ $? -ne 0 ] && exit 1
