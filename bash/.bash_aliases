@@ -9,3 +9,7 @@ alias root='sudo su -'
 alias nwemacs='emacs -nw'
 alias dk='docker'
 alias dkc='docker-compose'
+
+
+alias maillog='tail -f /var/log/maillog'
+alias syslog='tail -f /var/log/messages'
