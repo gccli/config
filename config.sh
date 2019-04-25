@@ -178,10 +178,8 @@ function config_ssh_agent()
         cp -f $SRC $DST && chmod 400 $DST
     fi
 
-
-    ssh-keygen -y -f ${SRC} > ${SRC}.pub
-    ssh-copy-id -i $SRC localhost
-    rm -f ${SRC}.pub
+    notice "Add ssh public key to ~/.ssh/authorized_keys:"
+    ssh-keygen -y -f $DST | tee -a ~/.ssh/authorized_keys
 }
 
 function config_ssh_server()
