@@ -180,3 +180,7 @@ _psp()
     COMPREPLY=( $(compgen -W "mc_managerd mc_workerd psf_service_centerd psf_server_managerd" -- $cur) )
 }
 complete -F _psp psp
+
+for func in $(ls ~/.functions.d); do
+    source ~/.functions.d/$func
+done

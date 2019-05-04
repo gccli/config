@@ -91,6 +91,12 @@ function config_bash()
     copyfile $PWD/.pythonstartup ~/
     copyfile $PWD/.vboxmanage ~/
 
+    mkdir -p ~/.functions.d
+    for f in $(ls $PWD/bash/.functions.d); do
+        echo "copy $f ..."
+        copyfile $PWD/bash/.functions.d/$f ~/.functions.d
+    done
+
     if [ $UID -eq 0 ]; then
         copyfile $PWD/99-stats /etc/update-motd.d/
     fi
