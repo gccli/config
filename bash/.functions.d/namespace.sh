@@ -52,7 +52,7 @@ ns-cleanup () {
         sudo pkill -F "${DNSMASQ}"
     done
     # Remove faucet dataplane connection
-    sudo ip link delete veth 2>/dev/null || true
+    sudo ip link delete veth-faucet 2>/dev/null || true
     # Remove openvswitch bridge
     sudo ovs-vsctl del-br br0
 }
