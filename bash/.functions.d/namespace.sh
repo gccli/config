@@ -15,6 +15,19 @@ ns-create () {
     sudo ip netns exec ${NAME} ip link set dev lo up
 }
 
+ns-create2 () {
+    local name=$1
+    local max_index=${2:-1}
+
+    ip netns add ${name}
+    for i in $(seq 0 ${max_index}); do
+        ip link add dev veth$i-${name} type veth peer name veth$i netns $name
+        ip link set dev veth$i-${name} up
+        ip netns exec ${name} ip link set dev veth$i up
+    done
+    ip netns exec ${name} ip link set dev lo up
+}
+
 ns-ex () {
     NS=$(ip netns | egrep "\(id: $1\)")
     if [ $? -eq 0 ]; then
