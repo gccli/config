@@ -77,6 +77,26 @@ ns-cleanup () {
     done
 }
 
+
+ns-addif () {
+    local netns=$1
+    local iface=$2
+    local cidr=${3}
+    local type=${4:-ether}
+
+    ip link add dev ${iface}-${netns} type veth peer name ${iface} netns ${netns}
+    ip link set dev ${iface}-${netns} up
+    ip netns exec ${netns} ip link set dev ${iface} up
+
+    if [ -n "$cidr" ]; then
+        if ! echo $cidr | egrep '/[0-9]+'; then
+            cidr=$cidr/24
+        fi
+        ip netns exec ${netns} ip addr add dev ${iface} $cidr
+    fi
+}
+
+
 ns-add-vlanif () {
     local netns=$1
     local ip=$2
