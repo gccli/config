@@ -67,7 +67,9 @@ ns-cleanup () {
     # Remove veth pair
     for ifname in $(ls /sys/class/net); do
         if echo $ifname | egrep '^veth'; then
-            ip link delete $ifname >/dev/null 2>&1
+            if ip link show $ifname >/dev/null 2>&1; then
+                ip link delete $ifname
+            fi
         fi
     done
 
