@@ -1,13 +1,17 @@
 ns-create () {
+    if [ $# -lt 1 ]; then
+        echo "Usage: $0 <name> [cidr]"
+        return
+    fi
+
     local name=$1
     local cidr=$2
-
     ip netns add ${name}
     ip link add dev veth0-${name} type veth peer name veth0 netns $name
     ip link set dev veth0-${name} up
     ip netns exec ${name} ip link set dev veth0 up
     if [ -n "$cidr" ]; then
-        if ! echo $cidr | egrep '/[0-9]+'; then
+        if ! echo $cidr | egrep '/[0-9]+' >/dev/null; then
            cidr=$cidr/24
         fi
         ip netns exec ${name} ip addr add dev veth0 $cidr
@@ -15,15 +19,31 @@ ns-create () {
     ip netns exec ${name} ip link set dev lo up
 }
 
-ns-create2 () {
+ns-create-multi () {
+    if [ $# -lt 1 ]; then
+        echo "Usage: $0 <name> [max_interface_index] [cidr]..."
+        echo "  Option max_interface_index default is 1, will create 2 interface: veth0 and veth1"
+        return
+    fi
+
     local name=$1
     local max_index=${2:-1}
+    shift 2
 
     ip netns add ${name}
     for i in $(seq 0 ${max_index}); do
         ip link add dev veth$i-${name} type veth peer name veth$i netns $name
         ip link set dev veth$i-${name} up
         ip netns exec ${name} ip link set dev veth$i up
+        cidr=$1
+        if [ -n "$cidr" ]; then
+            if ! echo $cidr | egrep '/[0-9]+' >/dev/null; then
+                cidr=$cidr/24
+            fi
+            echo "Set ip address ${cidr} for veth$i"
+            ip netns exec ${name} ip addr add dev veth$i $cidr
+        fi
+        shift
     done
     ip netns exec ${name} ip link set dev lo up
 }
