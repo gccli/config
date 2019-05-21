@@ -3,8 +3,8 @@ ns-create () {
     local cidr=$2
 
     ip netns add ${name}
-    ip link add dev veth-${name} type veth peer name veth0 netns $name
-    ip link set dev veth-${name} up
+    ip link add dev veth0-${name} type veth peer name veth0 netns $name
+    ip link set dev veth0-${name} up
     ip netns exec ${name} ip link set dev veth0 up
     if [ -n "$cidr" ]; then
         if ! echo $cidr | egrep '/[0-9]+'; then
