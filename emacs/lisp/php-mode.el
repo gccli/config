@@ -9,14 +9,14 @@
 ;; Maintainer: USAMI Kenta <tadsan@zonu.me>
 ;; URL: https://github.com/emacs-php/php-mode
 ;; Keywords: languages php
-;; Version: 1.21.2
+;; Version: 1.21.3
 ;; Package-Requires: ((emacs "24.3") (cl-lib "0.5"))
 ;; License: GPL-3.0-or-later
 
-(defconst php-mode-version-number "1.21.2"
+(defconst php-mode-version-number "1.21.3"
   "PHP Mode version number.")
 
-(defconst php-mode-modified "2019-05-11"
+(defconst php-mode-modified "2019-05-25"
   "PHP Mode build date.")
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,6 @@
 (require 'font-lock)
 (require 'add-log)
 (require 'custom)
-(require 'flymake)
 (require 'etags)
 (require 'speedbar)
 (require 'imenu)
@@ -137,6 +136,7 @@
 (defcustom php-mode-default-face 'default
   "Default face in `php-mode' buffers."
   :group 'php-mode
+  :tag "PHP Mode Default Face"
   :type 'face)
 
 (define-obsolete-variable-alias 'php-speedbar-config 'php-mode-speedbar-config "1.20.0")
@@ -144,6 +144,7 @@
   "When set to true automatically configures Speedbar to observe PHP files.
 Ignores php-file patterns option; fixed to expression \"\\.\\(inc\\|php[s345]?\\)\""
   :group 'php-mode
+  :tag "PHP Mode Speedbar Config"
   :type 'boolean
   :set (lambda (sym val)
          (set-default sym val)
@@ -155,6 +156,7 @@ Ignores php-file patterns option; fixed to expression \"\\.\\(inc\\|php[s345]?\\
   "Normally `php-mode' starts with the speedbar closed.
 Turning this on will open it whenever `php-mode' is loaded."
   :group 'php-mode
+  :tag "PHP Mode Speedbar Open"
   :type 'boolean
   :set (lambda (sym val)
          (set-default sym val)
@@ -165,6 +167,7 @@ Turning this on will open it whenever `php-mode' is loaded."
 (defcustom php-mode-template-compatibility t
   "Should detect presence of html tags."
   :group 'php-mode
+  :tag "PHP Mode Template Compatibility"
   :type 'boolean)
 
 (defun php-mode-extra-constants-create-regexp (kwds)
@@ -195,6 +198,7 @@ of constants when set."
 (defcustom php-mode-lineup-cascaded-calls nil
   "Indent chained method calls to the previous line."
   :group 'php-mode
+  :tag "PHP Mode Lineup Cascaded Calls"
   :type 'boolean)
 
 
@@ -202,6 +206,7 @@ of constants when set."
 (defcustom php-mode-extra-constants '()
   "A list of additional strings to treat as PHP constants."
   :group 'php-mode
+  :tag "PHP Mode Extra Constants"
   :type '(repeat string)
   :set 'php-mode-extra-constants-set)
 
@@ -214,6 +219,8 @@ set to `semantic-create-imenu-index' due to `c-mode' being its
 parent.  Set this variable to t if you want to use
 `imenu-default-create-index-function' even with `semantic-mode'
 enabled."
+  :group 'php-mode
+  :tag "PHP Mode Do Not Use Semantic Imenu"
   :type 'boolean)
 
 (defcustom php-completion-file ""
@@ -234,31 +241,45 @@ enabled."
 
 (defcustom php-mode-hook nil
   "List of functions to be executed on entry to `php-mode'."
+  :group 'php-mode
+  :tag "PHP Mode Hook"
   :type 'hook)
 
 (defcustom php-mode-pear-hook nil
   "Hook called when a PHP PEAR file is opened with `php-mode'."
+  :group 'php-mode
+  :tag "PHP Mode Pear Hook"
   :type 'hook)
 
 (defcustom php-mode-drupal-hook nil
   "Hook called when a Drupal file is opened with `php-mode'."
+  :group 'php-mode
+  :tag "PHP Mode Drupal Hook"
   :type 'hook)
 
 (defcustom php-mode-wordpress-hook nil
   "Hook called when a WordPress file is opened with `php-mode'."
+  :group 'php-mode
+  :tag "PHP Mode WordPress Hook"
   :type 'hook)
 
 (defcustom php-mode-symfony2-hook nil
   "Hook called when a Symfony2 file is opened with `php-mode'."
+  :group 'php-mode
+  :tag "PHP Mode Symfony2 Hook"
   :type 'hook)
 
 (defcustom php-mode-psr2-hook nil
   "Hook called when a PSR-2 file is opened with `php-mode'."
+  :group 'php-mode
+  :tag "PHP Mode PSR-2 Hook"
   :type 'hook)
 
 (defcustom php-mode-force-pear nil
   "Normally PEAR coding rules are enforced only when the filename contains \"PEAR.\"
 Turning this on will force PEAR rules on all PHP files."
+  :group 'php-mode
+  :tag "PHP Mode Force Pear"
   :type 'boolean)
 
 (defcustom php-mode-warn-if-mumamo-off t
@@ -266,6 +287,8 @@ Turning this on will force PEAR rules on all PHP files."
 mumamo-mode turned on.  Detects if there are any HTML tags in the
 buffer before warning, but this is is not very smart; e.g. if you
 have any tags inside a PHP string, it will be fooled."
+  :group 'php-mode
+  :tag "PHP Mode Warn If MuMaMo Off"
   :type '(choice (const :tag "Warn" t) (const "Don't warn" nil)))
 
 (defcustom php-mode-coding-style 'pear
@@ -283,6 +306,8 @@ This variable can take one of the following symbol values:
 `Symfony2' - use coding styles preferred for working with Symfony2 projects.
 
 `PSR-2' - use coding styles preferred for working with projects using PSR-2 standards."
+  :group 'php-mode
+  :tag "PHP Mode Coding Style"
   :type '(choice (const :tag "Default" default)
                  (const :tag "PEAR" pear)
                  (const :tag "Drupal" drupal)
@@ -298,6 +323,8 @@ This variable can take one of the following symbol values:
 
 If you want to suppress styles from being overwritten by directory / file
 local variables, set NIL."
+  :group 'php-mode
+  :tag "PHP Mode Enable Project Coding Style"
   :type 'boolean)
 
 (defcustom php-mode-enable-backup-style-variables t
@@ -305,11 +332,15 @@ local variables, set NIL."
 
 This function may interfere with other hooks and other behaviors.
 In that case set to `NIL'."
+  :group 'php-mode
+  :tag "PHP Mode Enable Backup Style Variables"
   :type 'boolean)
 
 (define-obsolete-variable-alias 'php-mode-disable-parent-mode-hooks 'php-mode-disable-c-mode-hook "1.21.0")
 (defcustom php-mode-disable-c-mode-hook t
   "When set to `T', do not run hooks of parent modes (`java-mode', `c-mode')."
+  :group 'php-mode
+  :tag "PHP Mode Disable C Mode Hook"
   :type 'boolean
   :group 'php-mode)
 
@@ -433,9 +464,7 @@ In that case set to `NIL'."
   php t)
 
 (c-lang-defconst c-assignment-operators
-  ;; falls back to java, so no need to specify the language
-  php (append (remove ">>>=" (c-lang-const c-assignment-operators))
-              '(".=")))
+  php '("=" "*=" "/=" "%=" "+=" "-=" ">>=" "<<=" "&=" "^=" "|=" ".=" "??="))
 
 (c-lang-defconst beginning-of-defun-function
   php 'php-beginning-of-defun)
@@ -502,8 +531,6 @@ PHP does not have an \"enum\"-like keyword."
     "__halt_compiler"
     "and"
     "array"
-    "callable"
-    "iterable"
     "as"
     "break"
     "catch"
@@ -793,13 +820,20 @@ example `html-mode'.  Known such libraries are:\n\t"
         nil))))
 
 (defun php-cautious-indent-region (start end &optional quiet)
+  "Carefully indent region `START' `END' in contexts other than HTML templates.
+
+If the optional argument `QUIET' is non-nil then no syntactic errors are
+reported, even if `c-report-syntactic-errors' is non-nil."
   (if (or (not php-mode-warn-if-mumamo-off)
+          (not (php-in-poly-php-html-mode))
           php-warned-bad-indent
           (php-check-html-for-indentation))
       (funcall 'c-indent-region start end quiet)))
 
 (defun php-cautious-indent-line ()
+  "Carefully indent lines in contexts other than HTML templates."
   (if (or (not php-mode-warn-if-mumamo-off)
+          (not (php-in-poly-php-html-mode))
           php-warned-bad-indent
           (php-check-html-for-indentation))
       (let ((here (point))
@@ -846,8 +880,8 @@ This is was done due to the problem reported here:
       ret)))
 
 (defun php-c-vsemi-status-unknown-p ()
-  "See `php-c-at-vsemi-p'."
-  )
+  "Always return NIL.  See `php-c-at-vsemi-p'."
+  nil)
 
 (defun php-lineup-string-cont (langelem)
   "Line up string toward equal sign or dot.
@@ -999,11 +1033,23 @@ After setting the stylevars run hooks according to STYLENAME
       (prog1 (php-set-style (symbol-name coding-style))
         (remove-hook 'hack-local-variables-hook #'php-mode-set-style-delay)))))
 
+(defvar php-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    (c-populate-syntax-table table)
+    (modify-syntax-entry ?_  "_"   table)
+    (modify-syntax-entry ?`  "\""  table)
+    (modify-syntax-entry ?\" "\""  table)
+    (modify-syntax-entry ?#  "< b" table)
+    (modify-syntax-entry ?\n "> b" table)
+    (modify-syntax-entry ?$  "'"   table)
+    table))
+
 ;;;###autoload
 (define-derived-mode php-mode c-mode "PHP"
   "Major mode for editing PHP code.
 
 \\{php-mode-map}"
+  :syntax-table php-mode-syntax-table
   ;; :after-hook (c-update-modeline)
   ;; (setq abbrev-mode t)
   (when php-mode-disable-c-mode-hook
@@ -1013,6 +1059,15 @@ After setting the stylevars run hooks according to STYLENAME
   (c-init-language-vars php-mode)
   (c-common-init 'php-mode)
 
+  (setq-local comment-start "// ")
+  (setq-local comment-start-skip
+              (eval-when-compile
+                (rx (group (or (: "#")
+                               (: "/" (+ "/"))
+                               (: "/*")))
+                    (* (syntax whitespace)))))
+  (setq-local comment-end "")
+
   (setq-local font-lock-string-face 'php-string)
   (setq-local font-lock-keyword-face 'php-keyword)
   (setq-local font-lock-builtin-face 'php-builtin)
@@ -1020,13 +1075,6 @@ After setting the stylevars run hooks according to STYLENAME
   (setq-local font-lock-function-name-face 'php-function-name)
   (setq-local font-lock-variable-name-face 'php-variable-name)
   (setq-local font-lock-constant-face 'php-constant)
-
-  (modify-syntax-entry ?_    "_" php-mode-syntax-table)
-  (modify-syntax-entry ?`    "\"" php-mode-syntax-table)
-  (modify-syntax-entry ?\"   "\"" php-mode-syntax-table)
-  (modify-syntax-entry ?#    "< b" php-mode-syntax-table)
-  (modify-syntax-entry ?\n   "> b" php-mode-syntax-table)
-  (modify-syntax-entry ?$    "'" php-mode-syntax-table)
 
   (setq-local syntax-propertize-function #'php-syntax-propertize-function)
   (add-to-list (make-local-variable 'syntax-propertize-extend-region-functions)
@@ -1057,12 +1105,8 @@ After setting the stylevars run hooks according to STYLENAME
 
   (setq indent-line-function 'php-cautious-indent-line)
   (setq indent-region-function 'php-cautious-indent-region)
-  (setq c-at-vsemi-p-fn 'php-c-at-vsemi-p)
-  (setq c-vsemi-status-unknown-p 'php-c-vsemi-status-unknown-p)
-
-  ;; syntax-begin-function is obsolete in Emacs 25.1
-  (with-no-warnings
-    (setq-local syntax-begin-function 'c-beginning-of-syntax))
+  (setq c-at-vsemi-p-fn #'php-c-at-vsemi-p)
+  (setq c-vsemi-status-unknown-p-fn #'php-c-vsemi-status-unknown-p)
 
   ;; We map the php-{beginning,end}-of-defun functions so that they
   ;; replace the similar commands that we inherit from CC Mode.
@@ -1082,7 +1126,10 @@ After setting the stylevars run hooks according to STYLENAME
   (when (>= emacs-major-version 25)
     (with-silent-modifications
       (save-excursion
-        (php-syntax-propertize-function (point-min) (point-max))))))
+        (let* ((start (point-min))
+               (end (min (point-max)
+                         (+ start syntax-propertize-chunk-size))))
+          (php-syntax-propertize-function start end))))))
 
 (declare-function semantic-create-imenu-index "semantic/imenu" (&optional stream))
 
@@ -1224,6 +1271,7 @@ current `tags-file-name'."
 If non-nil, this shadows the value of `browse-url-browser-function' when
 calling `php-search-documentation' or `php-search-local-documentation'."
   :group 'php
+  :tag "PHP Search Documentation Browser Function"
   :type '(choice (const :tag "default" nil) function)
   :link '(variable-link browse-url-browser-function))
 
@@ -1393,9 +1441,10 @@ a completion list."
      ;; Highlight variables, e.g. 'var' in '$var' and '$obj->var', but
      ;; not in $obj->var()
      ("\\(->\\)\\(\\sw+\\)\\s-*(" (1 'php-object-op) (2 'php-method-call))
+     ("\\<\\(const\\)\\s-+\\(\\_<.+?\\_>\\)" (1 'php-keyword) (2 'php-constant-assign))
 
      ;; Highlight special variables
-     ("\\(\\$\\)\\(this\\|that\\)\\_>" (1 'php-$this-sigil) (2 'php-$this))
+     ("\\(\\$\\)\\(this\\)\\>" (1 'php-$this-sigil) (2 'php-$this))
      ("\\(\\$+\\)\\(\\sw+\\)" (1 'php-variable-sigil) (2 'php-variable-name))
      ("\\(->\\)\\([a-zA-Z0-9_]+\\)" (1 'php-object-op) (2 'php-property-name))
 
@@ -1411,12 +1460,13 @@ a completion list."
      ;; - when used as cast, so that (int) and (array) look the same
      ("(\\(array\\))" 1 font-lock-type-face)
 
+     (,(regexp-opt php-magical-constants 'symbols) (1 'php-magical-constant))
      ;; namespaces
      ("\\(\\([a-zA-Z0-9_]+\\\\\\)+[a-zA-Z0-9_]+\\|\\(\\\\[a-zA-Z0-9_]+\\)+\\)[^:a-zA-Z0-9_\\\\]" 1 'font-lock-type-face)
      ("\\(\\([a-zA-Z0-9_]+\\\\\\)+[a-zA-Z0-9_]+\\|\\(\\\\[a-zA-Z0-9_]+\\)+\\)::" 1 'php-constant)
 
      ;; Support the ::class constant in PHP5.6
-     ("\\sw+\\(::\\)\\(class\\)\\b" (1 'php-paamayim-nekudotayim) (2 'php-constant))
+     ("\\sw+\\(::\\)\\(class\\)\\b" (1 'php-paamayim-nekudotayim) (2 'php-magical-constant))
 
      ;; Highlight static method calls as such. This is necessary for method
      ;; names which are identical to keywords to be highlighted correctly.
@@ -1491,34 +1541,12 @@ a completion list."
 (defvar php-font-lock-keywords php-font-lock-keywords-3
   "Default expressions to highlight in PHP Mode.")
 
-;;; Provide support for Flymake so that users can see warnings and
-;;; errors in real-time as they write code.
-
-(defun php-flymake-php-init ()
-  "PHP specific init-cleanup routines.
-
-This is an alternative function of `flymake-php-init'.
-Look at the `php-executable' variable instead of the constant \"php\" command."
-  (let* ((temp-file
-          (funcall
-           (eval-when-compile
-             (if (fboundp 'flymake-proc-init-create-temp-buffer-copy)
-                 'flymake-proc-init-create-temp-buffer-copy
-               'flymake-init-create-temp-buffer-copy))
-           'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (list php-executable (list "-f" local-file "-l"))))
-
-(add-to-list 'flymake-allowed-file-name-masks
-             '("\\.php[345s]?\\'"
-               php-flymake-php-init
-               flymake-simple-cleanup
-               flymake-get-real-file-name))
-
-(add-to-list 'flymake-err-line-patterns
-             '("\\(Parse\\|Fatal\\) error: \\(.*?\\) in \\(.*?\\) on line \\([0-9]+\\)" 3 4 nil 2))
+(add-to-list
+ (eval-when-compile
+   (if (boundp 'flymake-proc-allowed-file-name-masks)
+       'flymake-proc-allowed-file-name-masks
+     'flymake-allowed-file-name-masks))
+ '("\\.php[345s]?\\'" php-flymake-php-init))
 
 
 (defun php-send-region (start end)
@@ -1572,23 +1600,9 @@ The output will appear in the buffer *PHP*."
 (ad-activate 'fixup-whitespace)
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist
-             (cons
-              (eval-when-compile
-                (rx (or
-                     ;; File name extensions  (ex. "*.php", "*.phtml")
-                     (: "."
-                        (or (: "php" (? (in "s345t")))
-                            "amk"
-                            "phtml"))
-                     ;; Full file names  (ex. "/Makefile", "/Amkfile")
-                     (: "/"
-                        (or "Amkfile"
-                            ".php_cs"
-                            ".php_cs.dist")))
-                    string-end))
-              'php-mode)
-             t)
+(progn
+  (add-to-list 'auto-mode-alist '("/\\.php_cs\\(?:\\.dist\\)?\\'" . php-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(?:php[s345]?\\|phtml\\)\\'" . php-mode-maybe)))
 
 (provide 'php-mode)
 ;;; php-mode.el ends here
