@@ -75,8 +75,7 @@ function check_config() {
     [ ! -f $bashlocal ] && return
 
     if grep "agentrc" $bashlocal >/dev/null; then
-        [ $opt_cfg_rsa -eq 0 ] && read -p "Re-config bash, really disable ssh-agent (y/n)? " yes
-        [ "$yes" != "y" ] && opt_cfg_rsa=1
+        [ $opt_cfg_rsa -eq 0 ] && read -p "Re-config bash, really disable ssh-agent (y/n)? " opt_cfg_rsa
     fi
 }
 
@@ -97,7 +96,7 @@ function config_bash()
         copyfile $PWD/bash/.functions.d/$f ~/.functions.d
     done
 
-    if [ $UID -eq 0 ]; then
+    if [ $UID -eq 0 -a -d /etc/update-motd.d ]; then
         copyfile $PWD/99-stats /etc/update-motd.d/
     fi
 
@@ -154,8 +153,13 @@ function config_ssh_agent()
     local DST=~/.ssh/id_rsa
 
     local line=". ~/.ssh/agentrc"
-    if [ $opt_cfg_rsa -eq 0 ]; then
+    if [ "${opt_cfg_rsa}x" == "yx" ]; then
         rm -f ~/.ssh/agentrc ~/.ssh/environment
+        return
+    fi
+
+    if [ "${opt_cfg_rsa}x" != "1x" ]; then
+        echo "Ignore SSH agent"
         return
     fi
 
@@ -250,7 +254,7 @@ do
 done
 ########## END ##########
 echo "Customizing for $DISTRIB_ID $DISTRIB_RELEASE" | tee $MYLOG
-[ $opt_cfg_rsa -ne 0 ] && echo "  Import RSA Key: yes"
+[ $opt_cfg_rsa -eq 1 ] && echo "  Import RSA Key: yes"
 [ $opt_link -ne 0 ] && echo "  Symbol Link: yes"
 echo
 
