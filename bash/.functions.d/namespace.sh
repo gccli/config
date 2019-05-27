@@ -1,12 +1,13 @@
 ns-create () {
     if [ $# -lt 1 ]; then
-        echo "Usage: $0 <name> [cidr]"
+        echo "Usage: $0 <name> [cidr] "
         return
     fi
 
     local name=$1
     local cidr=$2
     ip netns add ${name}
+
     ip link add dev veth0-${name} type veth peer name veth0 netns $name
     ip link set dev veth0-${name} up
     ip netns exec ${name} ip link set dev veth0 up
@@ -60,28 +61,19 @@ ns-ex () {
 }
 
 ns-cleanup () {
-    for NETNS in $(ip netns list | awk '{print $1}'); do
-        [ -n "$NETNS" ] || continue
-        name=${NETNS}
-        if [ -f "/run/dhclient-${name}.pid" ]; then
-            # Stop dhclient
-            pkill -F "/run/dhclient-${name}.pid"
-        fi
-        if [ -f "/run/iperf3-${name}.pid" ]; then
-            # Stop iperf3
-            pkill -F "/run/iperf3-${name}.pid"
-        fi
-        if [ -f "/run/bird-${name}.pid" ]; then
-            # Stop bird
-            pkill -F "/run/bird-${name}.pid"
-        fi
+    pkill dnsmasq
+    pkill dhclient
+    pkill ospfd
+    pkill zebra
+    pkill vtysh
+    sleep 1
+    ps -ef|egrep 'zebra|ospfd|dhclient|dnsmasq'|grep -v grep
+    rm -f /tmp/*.leases
 
-        ip netns delete $NETNS
-    done
-    for DNSMASQ in /run/dnsmasq-vlan*.pid; do
-        [ -e "$DNSMASQ" ] || continue
-        # Stop dnsmasq
-        pkill -F "${DNSMASQ}"
+
+    for ns in $(ip netns list | awk '{print $1}'); do
+        [ -n "$ns" ] || continue
+        ip netns delete $ns
     done
 
     # Remove veth pair
@@ -98,7 +90,6 @@ ns-cleanup () {
         ovs-vsctl del-br $br
     done
 }
-
 
 ns-addif () {
     local netns=$1
