@@ -92,6 +92,7 @@ def csv_write(filename, header, rows):
             writer.writerow(header)
         for row in rows:
             writer.writerow(row)
+        csv_w.close()
     if os.path.exists(tmpfilename):
         shutil.move(tmpfilename, filename)
 
