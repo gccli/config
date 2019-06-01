@@ -166,15 +166,21 @@ function config_ssh_agent()
     if [ ! -f ${SRC} ]; then
         echo
         notice "Decrypting RSA key:"
-        openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
-        chmod 600 ${SRC}
-        if [ $? -ne 0 ]; then
-            die "Decrypt RSA key error"
+
+        local version=$(openssl version | egrep -o '[0-9]\.[0-9]\.[0-9]')
+        if [ "${version:0:3}" == "1.1" ]; then
+            # The default digest was changed from md5 to sha256 in Openssl 1.1
+            openssl aes-256-cbc -md md5 -d -in ${SRC}.bin -out ${SRC}
+            [ $? -ne 0 ] && die "Decrypt RSA key error"
+        else
+            openssl aes-256-cbc -d -in ${SRC}.bin -out ${SRC}
+            [ $? -ne 0 ] && die "Decrypt RSA key error"
         fi
 
+        chmod 600 ${SRC}
         if [ $opt_rsa_without_pass -eq 1 ]; then
             notice "Remove passphrase from RSA key:"
-            ssh-keygen -p -f ${SRC}
+            ssh-keygen -p -f ${SRC} -N ""
         fi
     fi
 
