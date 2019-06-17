@@ -21,11 +21,11 @@ def download(row):
     req = urllib2.Request(url, headers=headers)
 
     if time.time() - float(last_modify) < 7*86400:
-        print 'use cache'
+        print ('use cache')
         return row
 
     try:
-        print 'downloading {0}...'.format(url)
+        print ('downloading {0}...'.format(url))
         resp = urllib2.urlopen(req)
         info = resp.info()
         etag = info.get('ETag')
@@ -33,13 +33,13 @@ def download(row):
             shutil.copyfileobj(resp, fp)
         row[1] = etag
         row[2] = int(time.time())
-        print '{0} created, etag={1}'.format(os.path.basename(dst_cache), etag)
+        print ('{0} created, etag={1}'.format(os.path.basename(dst_cache), etag))
     except urllib2.HTTPError as e:
-        print e.code, e.reason
+        print (e.code, e.reason)
         if e.code == 304:
             return
     except urllib2.URLError as e:
-        print e.reason
+        print (e.reason)
     return row
 
 def update(args):
