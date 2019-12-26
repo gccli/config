@@ -7,10 +7,7 @@ alias searchpkg='apt-cache search -n'
 alias showpkg='apt-cache showpkg'
 alias root='sudo su -'
 alias nwemacs='emacs -nw'
-alias dk='docker'
-alias dkc='docker-compose'
-
 alias maillog='tail -f /var/log/maillog'
 alias syslog='tail -f /var/log/messages'
-
 alias ip6='ip -f inet6'
+alias ksys='kubectl -n kube-system'
