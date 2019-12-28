@@ -18,7 +18,7 @@ opt_link=0
 opt_verbose=0
 opt_cfg_rsa=0
 opt_rsa_without_pass=0
-
+opt_update_emacs=y
 if [ -f /etc/redhat-release ]; then
     DISTRIB_ID="CentOS"
     DISTRIB_RELEASE=$(cat /etc/redhat-release|sed 's/CentOS //')
@@ -231,7 +231,7 @@ function config_ssh()
 
 ################################################################################
 ##################           Parse Command Line             ####################
-if ! my__options=$(getopt -u -o vhl -l rsa,rsa-nopass,help -- "$@")
+if ! my__options=$(getopt -u -o vhlN -l rsa,rsa-nopass,help -- "$@")
 then
     exit 1
 fi
@@ -252,6 +252,9 @@ do
             opt_cfg_rsa=1
             opt_rsa_without_pass=1
             ;;
+        -N)
+            opt_update_emacs=n
+            ;;
         (--) shift; break;;
         (-*) echo "error - unrecognized option $1" 1>&2; exit 1;;
         (*) usage;;
@@ -268,6 +271,6 @@ echo
 check_config
 config_bash
 config_git
-./config-emacs.sh
+./config-emacs.sh ${opt_update_emacs}
 config_ssh
 echo 'Done'
