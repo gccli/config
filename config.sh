@@ -92,13 +92,8 @@ function config_bash()
 
     mkdir -p ~/.functions.d
     for f in $(ls $PWD/bash/.functions.d); do
-        echo "copy $f ..."
         copyfile $PWD/bash/.functions.d/$f ~/.functions.d
     done
-
-    if [ $UID -eq 0 -a -d /etc/update-motd.d ]; then
-        copyfile $PWD/99-stats /etc/update-motd.d/
-    fi
 
     notice "config bash $BASH_VERSION"
     [ ! -f $bashrc ] && die "$bashrc not exists"
@@ -273,4 +268,5 @@ config_bash
 config_git
 ./config-emacs.sh ${opt_update_emacs}
 config_ssh
-echo 'Done'
+echo
+echo "source ~/.bashrc"
