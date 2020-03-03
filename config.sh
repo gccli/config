@@ -215,6 +215,10 @@ function config_ssh_server()
 function config_ssh()
 {
     mkdir -p ~/.ssh
+    if -f [ ~/.ssh/config ]; then
+        cp ~/.ssh/config ~/.ssh/config.$(date +%s)
+    fi
+
     /bin/cp -f ${PWD}/ssh/config ~/.ssh/
     chown ${USER}  ~/.ssh/config
     chmod 400      ~/.ssh/config
