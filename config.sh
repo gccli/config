@@ -215,7 +215,7 @@ function config_ssh_server()
 function config_ssh()
 {
     mkdir -p ~/.ssh
-    if -f [ ~/.ssh/config ]; then
+    if [ -f ~/.ssh/config ]; then
         cp ~/.ssh/config ~/.ssh/config.$(date +%s)
     fi
 
