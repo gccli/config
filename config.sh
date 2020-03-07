@@ -137,8 +137,8 @@ function config_git()
         # Cache git password, set the cache to timeout after 1 hour
         git config --global credential.helper 'cache --timeout=3600'
 
-        git config --global user.name  "Jing Li"
-        git config --global user.email "lijing@example.com"
+        echo git config --global user.name  '"Jing Li"'
+        echo git config --global user.email '"lijing@example.com"'
     fi
 }
 
