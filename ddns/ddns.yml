@@ -1,0 +1,31 @@
+---
+- name: DDNS
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: find public ip address
+      shell: dig @resolver1.opendns.com -t A -4 myip.opendns.com +short
+      register: digrc
+
+    - debug: var=digrc
+
+    - name: delete result file when timeout
+      shell: find {{ddns_result}} -type f -mmin +{{ddns_timeout}} -delete
+      ignore_errors: yes
+
+    - name: record query result
+      local_action: copy content={{digrc.stdout}} dest={{ddns_result}}
+      register: rc
+
+    - name: Sending an e-mail if ddns result file changed
+      mail:
+        host: "{{mailhost}}"
+        from: "{{mailfrom}}"
+        username: "{{mailfrom}}"
+        password: "{{mailpass}}"
+        to:
+          - "{{mailto}}"
+        subject: DDNS result
+        body: Your public IP address {{digrc.stdout}} found
+      when: rc.changed
