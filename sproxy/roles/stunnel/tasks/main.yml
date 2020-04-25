@@ -1,0 +1,17 @@
+---
+- file: path=/var/log/stunnel.log owner=nobody group=nobody
+
+- file: path=/var/run/stunnel owner=nobody group=nobody state=directory
+
+- template:
+    src: stunnel.conf
+    dest: /etc/squid/squid.conf
+    owner: nobody
+
+- shell: |
+    pkill stunnel
+  ignore_errors: yes
+
+- pause: seconds=5
+
+- command: stunnel

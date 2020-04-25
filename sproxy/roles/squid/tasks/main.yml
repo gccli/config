@@ -1,0 +1,12 @@
+---
+- name: configure squid
+  template:
+    src: squid.conf
+    dest: /etc/squid/squid.conf
+
+- name: set password
+  shell: |
+    htpasswd -bc -c /etc/squid/passwd {{proxy_username}} {{proxy_password}}
+
+- name: start and enable squid
+  service: name=squid enabled=yes state=restarted
