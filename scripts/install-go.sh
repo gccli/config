@@ -14,6 +14,7 @@ cat >/etc/profile.d/golang.sh <<EOF
 export PATH=$PATH:$GOROOT/bin
 export GOPATH=/opt/go
 export GOPROXY=https://goproxy.io
+export GOSUMDB=gosum.io+ce6e7565+AY5qEHUk/qmHc5btzW45JVoENfazw8LielDsaI+lEbq6
 EOF
 
 # REFERENCE: https://goproxy.io/zh/
