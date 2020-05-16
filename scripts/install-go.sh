@@ -1,19 +1,22 @@
-#!/bin/bash
+#!/bin/bash -e
 
 GOVERSION=1.14.3
+
+#GOURL=https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz
 GOURL=https://gomirrors.org/dl/go/go${GOVERSION}.linux-amd64.tar.gz
 GOROOT=/usr/local/go
 GOBASE=$(dirname $GOROOT)
+#GOPROXY=https://mirrors.aliyun.com/goproxy/
+GOPROXY=https://goproxy.io
 
 rm -rf $GOROOT
-
 echo "curl -sL ${PROXY_OPTS} $GOURL | tar -C $GOBASE -xzv"
 curl -sL ${PROXY_OPTS} $GOURL | tar -C $GOBASE -xzv
 
 cat >/etc/profile.d/golang.sh <<EOF
 export PATH=$PATH:$GOROOT/bin
 export GOPATH=/opt/go
-export GOPROXY=https://goproxy.io
+export GOPROXY=$GOPROXY
 export GOSUMDB=gosum.io+ce6e7565+AY5qEHUk/qmHc5btzW45JVoENfazw8LielDsaI+lEbq6
 EOF
 
