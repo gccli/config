@@ -2,8 +2,10 @@
 
 REF:https://www.cnblogs.com/jinhengyu/p/10258102.html
 
+copy cert and key file to /etc/tls
+add `ip hostname` to /etc/hosts
 
-
+ansible-playbook -i hosts --ask-vault-pass setup.yml
 
 Squid configuration
 ===================

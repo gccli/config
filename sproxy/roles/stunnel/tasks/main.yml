@@ -1,11 +1,11 @@
 ---
-- file: path=/var/log/stunnel.log owner=nobody group=nobody
+- file: path=/var/log/stunnel.log owner=nobody group=nobody state=touch
 
 - file: path=/var/run/stunnel owner=nobody group=nobody state=directory
 
 - template:
     src: stunnel.conf
-    dest: /etc/squid/squid.conf
+    dest: /etc/stunnel/stunnel.conf
     owner: nobody
 
 - shell: |

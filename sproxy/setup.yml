@@ -15,9 +15,14 @@
         - squid
         - httpd-tools
 
+    - stat: path={{tls_cert}}
+      register: stc
+    - stat: path={{tls_key}}
+      register: stk
     - copy: src={{src_cert}} dest={{tls_cert}}
+      when: not stc.stat.exists 
     - copy: src={{src_key}} dest={{tls_key}}
-
+      when: not stk.stat.exists 
   roles:
     - squid
     - stunnel
