@@ -5,6 +5,9 @@
 
 # Install automatic
 
-1. add `ip hostname` to /etc/hosts
+```
+yum install -y epel-release
+yum install -y ansible
 
 ansible-playbook -i hosts --ask-vault-pass setup.yml
+```
