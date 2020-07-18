@@ -6,5 +6,5 @@ if [ "${ip}x" == "x" ]; then
     exit 0
 fi
 
-ansible $ip -m synchronize -a "src=/etc/pki/tls/certs/inetlinux.com.crt dest=/etc/pki/tls/certs/inetlinux.com.crt"
-ansible $ip -m synchronize -a "src=/etc/pki/tls/private/inetlinux.com.key dest=/etc/pki/tls/private/inetlinux.com.key"
+scp -p /etc/pki/tls/certs/inetlinux.com.crt   $ip:/etc/pki/tls/certs/inetlinux.com.crt
+scp -p /etc/pki/tls/private/inetlinux.com.key $ip:/etc/pki/tls/private/inetlinux.com.key
