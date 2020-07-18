@@ -8,3 +8,7 @@ fi
 
 scp -p /etc/pki/tls/certs/inetlinux.com.crt   $ip:/etc/pki/tls/certs/inetlinux.com.crt
 scp -p /etc/pki/tls/private/inetlinux.com.key $ip:/etc/pki/tls/private/inetlinux.com.key
+
+rsync -av ../sproxy $ip:~/
+ssh $ip yum install -y epel-release
+ssh $ip yum install -y ansible
