@@ -38,6 +38,11 @@
         line: "{{my_ip}} {{my_hostname}}"
         regexp: '^{{my_ip}}'
 
+    - name: setup iptables
+      shell: |
+        iptables -D INPUT -p tcp --dport {{stunnel_port}} -j ACCEPT || true
+        iptables -I INPUT -p tcp --dport {{stunnel_port}} -j ACCEPT
+
   roles:
     - squid
     - stunnel
