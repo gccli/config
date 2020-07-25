@@ -16,20 +16,34 @@
           - squid
           - httpd-tools
 
+    - set_fact:
+        tls_cert: "/etc/pki/tls/certs/{{my_hostname}}.crt"
+        tls_key: "/etc/pki/tls/private/{{my_hostname}}.key"
+
     - stat: path={{tls_cert}}
       register: stc
+
     - stat: path={{tls_key}}
       register: stk
-    - copy: src={{src_cert}} dest={{tls_cert}}
+
+    - fail:
+        msg: "Certificate file {{tls_cert}} not exists"
       when: not stc.stat.exists
-    - copy: src={{src_key}} dest={{tls_key}}
+    - fail:
+        msg: "Key file {{tls_key}} not exists"
       when: not stk.stat.exists
+
+    - debug:
+        msg: "Using {{tls_cert}} and {{tls_key}}"
+
 
     - shell: |
         ip a show dev eth0 | sed -nre 's|.*inet ([\.0-9]+)/[0-9]+.*|\1|p'
       register: ipret
+
     - set_fact:
         my_ip: "{{ipret.stdout}}"
+
     - debug:
         msg: "Add {{my_ip}} {{my_hostname}} in /etc/hosts"
 
@@ -40,8 +54,8 @@
 
     - name: setup iptables
       shell: |
-        iptables -D INPUT -p tcp --dport {{stunnel_port}} -j ACCEPT || true
-        iptables -I INPUT -p tcp --dport {{stunnel_port}} -j ACCEPT
+        iptables -D INPUT -p tcp --dport {{proxy_port}} -j ACCEPT || true
+        iptables -I INPUT -p tcp --dport {{proxy_port}} -j ACCEPT
 
   roles:
     - squid
