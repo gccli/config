@@ -1,0 +1,18 @@
+[Unit]
+Description=SSL tunnel for network daemons
+After=squid.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/stunnel
+ExecStartPre=/usr/bin/stunnel.prev.sh
+ExecStartPost=/usr/bin/stunnel.post.sh
+PIDFile=/var/run/stunnel/stunnel.pid
+StandardOutput=journal
+TimeoutStartSec=15
+TimeoutStopSec=5
+RestartSec=1
+# WatchdogSec=15
+
+[Install]
+WantedBy=multi-user.target

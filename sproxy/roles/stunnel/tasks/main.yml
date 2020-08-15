@@ -1,17 +1,21 @@
 ---
-- file: path=/var/log/stunnel.log owner=nobody group=nobody state=touch
+- name: add files
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+    mode: preserve
+  with_items:
+    - src: stunnel.conf
+      dest: /etc/stunnel/stunnel.conf
+    - src: stunnel.service
+      dest: /usr/lib/systemd/system/stunnel.service
+    - src: stunnel.prev.sh
+      dest: /usr/bin/stunnel.prev.sh
+    - src: stunnel.post.sh
+      dest: /usr/bin/stunnel.post.sh
 
-- file: path=/var/run/stunnel owner=nobody group=nobody state=directory
-
-- template:
-    src: stunnel.conf
-    dest: /etc/stunnel/stunnel.conf
-    owner: nobody
-
-- shell: |
-    pkill stunnel
-  ignore_errors: yes
-
-- pause: seconds=5
-
-- command: stunnel
+- systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: stunnel
+    state: restarted

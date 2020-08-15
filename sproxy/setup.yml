@@ -4,6 +4,12 @@
   connection: local
   gather_facts: no
   pre_tasks:
+    - set_fact:
+        tls_cert: "/etc/pki/tls/certs/{{my_hostname}}.crt"
+        tls_key: "/etc/pki/tls/private/{{my_hostname}}.key"
+      tags: ['stunnel']
+
+  tasks:
     - name: Install epel
       yum: name=epel-release state=latest
     - name: ensure a list of packages installed
@@ -16,9 +22,6 @@
           - squid
           - httpd-tools
 
-    - set_fact:
-        tls_cert: "/etc/pki/tls/certs/{{my_hostname}}.crt"
-        tls_key: "/etc/pki/tls/private/{{my_hostname}}.key"
 
     - stat: path={{tls_cert}}
       register: stc
@@ -52,11 +55,7 @@
         line: "{{my_ip}} {{my_hostname}}"
         regexp: '^{{my_ip}}'
 
-    - name: setup iptables
-      shell: |
-        iptables -D INPUT -p tcp --dport {{proxy_port}} -j ACCEPT || true
-        iptables -I INPUT -p tcp --dport {{proxy_port}} -j ACCEPT
-
   roles:
-    - squid
-    - stunnel
+    - role: squid
+    - role: stunnel
+      tags: ['stunnel']
