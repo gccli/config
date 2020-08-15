@@ -4,24 +4,26 @@
   connection: local
   gather_facts: no
   pre_tasks:
-    - set_fact:
-        tls_cert: "/etc/pki/tls/certs/{{my_hostname}}.crt"
-        tls_key: "/etc/pki/tls/private/{{my_hostname}}.key"
-      tags: ['stunnel']
 
-  tasks:
     - name: Install epel
       yum: name=epel-release state=latest
+      run_once: true
+
     - name: ensure a list of packages installed
       yum:
         name: "{{ packages }}"
         state: latest
+      run_once: true
       vars:
         packages:
           - stunnel
           - squid
           - httpd-tools
 
+    - set_fact:
+        tls_cert: "/etc/pki/tls/certs/{{my_hostname}}.crt"
+        tls_key: "/etc/pki/tls/private/{{my_hostname}}.key"
+      tags: ['stunnel']
 
     - stat: path={{tls_cert}}
       register: stc
@@ -38,7 +40,6 @@
 
     - debug:
         msg: "Using {{tls_cert}} and {{tls_key}}"
-
 
     - shell: |
         ip a show dev eth0 | sed -nre 's|.*inet ([\.0-9]+)/[0-9]+.*|\1|p'
