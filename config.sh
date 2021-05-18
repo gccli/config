@@ -199,7 +199,7 @@ function config_ssh_server()
     [ $UID -ne 0 ] && echo "use root config sshd" && return
 
     local svname=ssh
-    if [ $DISTRIB_ID == "CentOS" ]; then
+    if [ "${DISTRIB_ID}x" == "CentOSx" ]; then
         svname=sshd
     fi
 
