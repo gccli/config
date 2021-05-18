@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# email validation
+
+EMAIL=$(git config --local user.email)
+
+if [[ "${EMAIL}x" == "x" ]]; then
+    echo "Email not set locally";
+    echo "Please run 'git config --local -l' to check it"
+    echo '   git config user.name "xxxx"'
+    echo '   git config user.email "xxxx@example.com"'
+    echo ''
+    exit 1;
+fi;

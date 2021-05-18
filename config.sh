@@ -7,6 +7,7 @@
 # 1.5.5 optimize emacs config and ssh-agent
 # 1.5.6 emacs Tex settings
 # 1.5.7 config display variable, more concise config style for bash
+# 1.5.8 remove vmbox functions
 #
 ################################################################################
 ############            Variables used in this script            ###############
@@ -88,7 +89,6 @@ function config_bash()
     copyfile $PWD/bash/.bash_aliases ~/
     copyfile $PWD/.gdbinit ~/
     copyfile $PWD/.pythonstartup ~/
-    copyfile $PWD/.vboxmanage ~/
 
     mkdir -p ~/.functions.d
     for f in $(ls $PWD/bash/.functions.d); do
@@ -106,7 +106,6 @@ function config_bash()
 
     echo "# $config_begin @time:$(date +%D) @version:$VERSION" > $bashlocal
     echo ". ~/.functions" >> $bashlocal
-    echo ". ~/.vboxmanage" >> $bashlocal
 
     [ $DISTRIB_ID == "CentOS" ] && echo ". ~/.bash_aliases" >> $bashlocal
 
@@ -137,8 +136,10 @@ function config_git()
         # Cache git password, set the cache to timeout after 1 hour
         git config --global credential.helper 'cache --timeout=3600'
 
-        echo git config --global user.name  '"Jing Li"'
-        echo git config --global user.email '"lijing@example.com"'
+#        echo git config --global user.name  '"Jing Li"'
+#        echo git config --global user.email '"lijing@example.com"'
+        mkdir -p ~/.git-templates/hooks/
+        /bin/cp git/.git-templates/hooks/pre-commit ~/.git-templates/hooks/
     fi
 }
 
