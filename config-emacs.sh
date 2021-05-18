@@ -1,6 +1,6 @@
 #!/bin/bash
 
-download=${1:-y}
+download=${1:-n}
 mkdir -p ~/.emacs.d/lisp
 
 if [ -d emacs/lisp ]; then

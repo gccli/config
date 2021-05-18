@@ -44,8 +44,8 @@
  version-control t)            ; use versioned backups
 
 ;; auto insert template
-(add-hook 'find-file-hook 'auto-insert)
-(require 'setup-autoinsert)
+;(add-hook 'find-file-hook 'auto-insert)
+;(require 'setup-autoinsert)
 
 ;; cc-mode and cscope
 (require 'xcscope)
