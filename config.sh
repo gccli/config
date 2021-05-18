@@ -220,6 +220,8 @@ function config_ssh()
         cp ~/.ssh/config ~/.ssh/config.$(date +%s)
     fi
 
+    /bin/cp -f ${PWD}/ssh/agentrc2 ~/.agentrc
+    tail -2 ~/.agentrc
     /bin/cp -f ${PWD}/ssh/config ~/.ssh/
     chown ${USER}  ~/.ssh/config
     chmod 400      ~/.ssh/config

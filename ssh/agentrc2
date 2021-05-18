@@ -1,0 +1,37 @@
+SSH_AGENT_ENV=~/.agentenv
+
+[ -f $SSH_AGENT_ENV ] && source $SSH_AGENT_ENV
+
+function show_ssh_agent() {
+    [ -f $SSH_AGENT_ENV ] && cat $SSH_AGENT_ENV && ssh-add -l
+}
+
+function start_ssh_agent() {
+    echo "start ssh-agnet..."
+    ssh-agent -a /var/run/ssh.agent.sock >$SSH_AGENT_ENV
+    sed -i '/^echo/d' $SSH_AGENT_ENV
+    cat $SSH_AGENT_ENV
+}
+
+function restart_ssh_agent() {
+    if [ "${SSH_AGENT_PID}x" != "x" ]; then
+        echo "kill the current agent $SSH_AGENT_PID"
+        ssh-agent -k
+    fi
+    start_ssh_agent
+}
+
+if [ "${SSH_AGENT_PID}x" == "x" ]; then
+    start_ssh_agent
+else
+    kill -0 ${SSH_AGENT_PID} 2>/dev/null
+    if [ $? -ne 0 ]; then
+        start_ssh_agent
+    else
+        echo "agent ${SSH_AGENT_PID} is running, you can type 'show_ssh_agent' to show it"
+    fi
+fi
+
+source $SSH_AGENT_ENV
+
+# source ~/.agentrc; show_ssh_agent | egrep 'keyid' || ssh-add /path/to/key
