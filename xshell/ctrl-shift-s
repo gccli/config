@@ -1,0 +1,11 @@
+#!/bin/bash
+# CTRL-SHIFT-S
+[ $UID -ne 0 ] && sudo -i
+
+if [ ! -f ~/.agentrc ]; then
+  echo "No agentrc"
+else
+  source ~/.agentrc
+  show_ssh_agent | egrep 'inetlinux' || ssh-add ~/cicdrepo/.inetlinux
+fi
+clear
